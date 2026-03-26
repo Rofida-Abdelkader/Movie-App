@@ -4,16 +4,22 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import MovieDetails from './pages/MovieDetails.jsx'; 
+import Login from './pages/Login';
+import Register from './pages/Register';
+import ResetPassword from './pages/ResetPassword'; // ضيفي السطر ده
 import BackToTop from './components/BackToTop';
 
 function App() {
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0d1b2a] text-black dark:text-white transition-colors duration-500">
+    <div className="min-h-screen bg-white dark:bg-[#0d1b2a] text-black dark:text-white transition-colors duration-500 flex flex-col">
       <Navbar />
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/movie/:id" element={<MovieDetails />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/reset-password" element={<ResetPassword />} /> {/* وضيفي السطر ده */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
@@ -22,6 +28,5 @@ function App() {
     </div>
   );
 }
-
 
 export default App;
