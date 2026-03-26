@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react';
 import { getNowPlaying, getPopular, getFreeToWatch } from '../services/api';
 import MovieCard from '../components/MovieCard';
 import { Play } from 'lucide-react';
+import { NoResultsEmpty } from '../components/EmptyState';
 
 const Home = () => {
     const [trendingMovies, setTrendingMovies] = useState([]);
     const [popularMovies, setPopularMovies] = useState([]);
     const [freeMovies, setFreeMovies] = useState([]);
     const [activeBg, setActiveBg] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
+    const [filteredMovies, setFilteredMovies] = useState([]); 
+    const [searchQuery, setSearchQuery] = useState("");
 
     const leaders = [
         {
@@ -40,42 +44,62 @@ const Home = () => {
                     getFreeToWatch()
                 ]);
 
-                setTrendingMovies(nowPlaying.data.results);
+                const trendingResults = nowPlaying.data.results;
+                setTrendingMovies(trendingResults);
+                setFilteredMovies(trendingResults); // إصلاح: استخدام البيانات الصحيحة هنا
                 setPopularMovies(popular.data.results);
                 setFreeMovies(free.data.results);
 
-                if (nowPlaying.data.results.length > 0) {
-                    setActiveBg(`https://image.tmdb.org/t/p/w1920_and_h600_multi_faces${nowPlaying.data.results[0].backdrop_path}`);
+                if (trendingResults.length > 0) {
+                    setActiveBg(`https://image.tmdb.org/t/p/w1920_and_h600_multi_faces${trendingResults[0].backdrop_path}`);
                 }
             } catch (error) {
                 console.error("Error fetching home data:", error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
         fetchHomeData();
     }, []);
 
+    const handleSearch = (e) => {
+        const query = e.target.value.toLowerCase();
+        setSearchQuery(query);
+        
+        const filtered = trendingMovies.filter(movie => 
+            movie.title.toLowerCase().includes(query)
+        );
+        setFilteredMovies(filtered);
+    };
+
+    const clearSearch = () => {
+        setSearchQuery("");
+        setFilteredMovies(trendingMovies);
+    };
+
     return (
         <div className="w-full bg-background text-foreground font-sans transition-colors duration-300">
             
-            {/* 1. Hero Section - Search and Welcome */}
-            <div className="relative h-[300px] md:h-[380px] bg-[#032541] flex items-center overflow-hidden">
+            {/* 1. Hero Section */}
+            <div className="relative h-[300px] md:h-[400px] bg-[#032541] flex items-center overflow-hidden">
                 <div 
                     className="absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-40" 
-                    style={{ 
-                        backgroundImage: `linear-gradient(to right, rgba(3, 37, 65, 0.8) 0%, rgba(3, 37, 65, 0) 100%), url('https://www.themoviedb.org/t/p/w1920_and_h600_multi_faces/nS68U7p49X06L78X67X869a9G0A.jpg')` 
-                    }}
+                    style={{ backgroundImage: `url('https://www.themoviedb.org/t/p/w1920_and_h600_multi_faces/nS68U7p49X06L78X67X869a9G0A.jpg')` }}
                 ></div>
                 
                 <div className="relative z-10 text-white w-full max-w-[1300px] mx-auto px-10 text-left">
                     <h1 className="text-[3rem] font-bold mb-1 tracking-tight">Welcome.</h1>
-                    <h2 className="text-[2rem] font-semibold mb-10 opacity-90 leading-tight">Millions of movies, TV shows and people to discover. Explore now.</h2>
+                    <h2 className="text-[2rem] font-semibold mb-10 opacity-90 leading-tight">Millions of movies to discover. Explore now.</h2>
                     
-                    <div className="relative w-full rounded-full bg-white flex items-center h-12 shadow-2xl overflow-hidden focus-within:ring-2 focus-within:ring-[#01b4e4] transition-all">
+                    {/* حقل البحث الموحد */}
+                    <div className="relative w-full rounded-full bg-white flex items-center h-12 shadow-2xl overflow-hidden focus-within:ring-2 focus-within:ring-[#01b4e4]">
                         <input 
                             type="text" 
-                            placeholder="Search for a movie, tv show, person......" 
-                            className="flex-1 px-6 text-gray-800 outline-none h-full text-lg placeholder:text-gray-400" 
+                            value={searchQuery}
+                            onChange={handleSearch}
+                            placeholder="Search for a movie..." 
+                            className="flex-1 px-6 text-gray-800 outline-none h-full text-lg" 
                         />
                         <button className="h-full px-8 bg-gradient-to-r from-[#1ed5a9] to-[#01b4e4] text-white font-bold hover:text-[#032541] transition-all">
                             Search
@@ -84,27 +108,30 @@ const Home = () => {
                 </div>
             </div>
 
-            {/* 2. Trending Section - Corrected background & text colors */}
+           {/* 2. Trending Section */}
             <section className="relative pt-10 pb-5 bg-background transition-colors duration-300">
                 <div className="max-w-[1300px] mx-auto px-10">
                     <div className="flex items-center gap-5 mb-6">
                         <h2 className="text-2xl font-bold">Trending</h2>
-                        <div className="flex border-2 border-[#032541] dark:border-[#01b4e4] rounded-full font-bold text-sm overflow-hidden h-8">
-                            <button className="bg-[#032541] dark:bg-[#01b4e4] text-[#1ed5a9] dark:text-[#032541] px-6">Today</button>
-                            <button className="px-6 hover:bg-muted transition-colors">This Week</button>
-                        </div>
                     </div>
-                    <div className="flex overflow-x-auto gap-6 pb-10 custom-scrollbar scroll-smooth">
-                        {trendingMovies.map((movie) => (
-                            <div key={movie.id} className="min-w-[150px] md:min-w-[180px] hover:scale-105 transition-transform duration-300">
-                                <MovieCard movie={movie} />
+
+                    {filteredMovies.length > 0 ? (
+                            <div className="flex overflow-x-auto gap-6 pb-10 custom-scrollbar">
+                                {filteredMovies.map((movie) => (
+                                    <div key={movie.id} className="min-w-[150px] md:min-w-[180px]">
+                                        <MovieCard movie={movie} />
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
+                        ) : (
+                            <div className="py-10">
+                                <NoResultsEmpty onClear={clearSearch} />
+                            </div>
+                        )}
                 </div>
             </section>
 
-            {/* 3. Latest Trailers - Background changes on hover */}
+            {/* 3. Latest Trailers */}
             <section className="relative py-10 transition-all duration-1000 ease-in-out bg-[#032541]">
                 <div className="absolute inset-0 opacity-30 bg-cover bg-center transition-all duration-1000"
                     style={{ backgroundImage: `url(${activeBg})` }}></div>
@@ -156,7 +183,7 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* 5. Join Today Section - Fixed dark background */}
+            {/* 5. Join Today Section */}
             <section className="relative min-h-[320px] text-white flex items-center overflow-hidden bg-[#1e0a3d]">
                 <div className="absolute inset-0 opacity-20 bg-cover bg-center"
                     style={{ backgroundImage: `url('https://www.themoviedb.org/t/p/w1920_and_h600_multi_faces/nS68U7p49X06L78X67X869a9G0A.jpg')` }}></div>
@@ -183,7 +210,7 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* 6. Leaderboard Section - Fixed Text and Progress Bar Colors */}
+            {/* 6. Leaderboard Section */}
             <section className="py-10 bg-background transition-colors duration-300">
                 <div className="max-w-[1300px] mx-auto px-10">
                     <div className="flex items-center gap-4 mb-8">
@@ -218,7 +245,6 @@ const Home = () => {
                                         {user.name}
                                     </h3>
                                     <div className="space-y-1.5 mt-2">
-                                        {/* All Time Progress Bar */}
                                         <div className="flex items-center gap-3">
                                             <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                                                 <div className="h-full bg-gradient-to-r from-[#c0fecf] to-[#1ed5a9]" style={{ width: user.allTimeWidth }}></div>
@@ -227,7 +253,6 @@ const Home = () => {
                                                 {user.allTime.toLocaleString()}
                                             </span>
                                         </div>
-                                        {/* Weekly Progress Bar */}
                                         <div className="flex items-center gap-3">
                                             <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                                                 <div className="h-full bg-[#f87171]" style={{ width: user.weeklyWidth }}></div>
@@ -246,5 +271,5 @@ const Home = () => {
         </div>
     );
 };
-    
+
 export default Home;
