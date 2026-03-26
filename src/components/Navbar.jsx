@@ -1,30 +1,36 @@
-import { Link } from 'react-router-dom';
-import { Heart, Search } from 'lucide-react';
+import React from 'react';
+import { FaPlus, FaSearch, FaBell } from 'react-icons/fa';
 
 const Navbar = () => {
   return (
-    <nav className="bg-[#032541] px-6 py-3 flex items-center justify-between sticky top-0 z-50 shadow-lg">
-      {/* Logo */}
-      <Link to="/" className="hover:opacity-80 transition">
-        <img 
-          src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg" 
-          alt="TMDB Logo" 
-          width={100}
-        />
-      </Link>
+    <nav className="bg-[#032541] h-[64px] flex items-center sticky top-0 z-50">
+      <div className="max-w-[1300px] mx-auto w-full px-8 flex justify-between items-center">
+        
+        {/* Left Side: Logo & Links */}
+        <div className="flex items-center gap-8">
+          <div className="flex flex-col leading-none font-black text-[#01b4e4] text-2xl tracking-tighter cursor-pointer">
+            <span>TMDB</span>
+          </div>
+          <ul className="hidden md:flex gap-6 text-white font-semibold text-[15px]">
+            <li className="hover:text-[#01b4e4] cursor-pointer">Movies</li>
+            <li className="hover:text-[#01b4e4] cursor-pointer">TV Shows</li>
+            <li className="hover:text-[#01b4e4] cursor-pointer">People</li>
+            <li className="hover:text-[#01b4e4] cursor-pointer">More</li>
+          </ul>
+        </div>
 
-      {/* Navigation Links */}
-      <div className="flex items-center gap-8">
-        <Link to="/" className="text-white text-sm font-medium hover:text-[#01b4e4] transition">
-          Home
-        </Link>
-        <Link to="/wishlist" className="text-white text-sm font-medium hover:text-[#01b4e4] flex items-center gap-1 transition">
-          <Heart size={18} />
-          Wishlist
-        </Link>
-        <Link to="/search" className="text-white hover:text-[#01b4e4] transition">
-          <Search size={20} />
-        </Link>
+        {/* Right Side: Icons & Profile */}
+        <div className="flex items-center gap-7 text-white">
+          <FaPlus className="cursor-pointer hover:text-[#01b4e4] text-sm" />
+          <div className="border border-white px-1.5 py-0.5 rounded-[3px] text-[11px] font-bold hover:bg-white hover:text-[#032541] cursor-pointer transition-colors">
+            EN
+          </div>
+          <FaBell className="cursor-pointer hover:text-[#01b4e4]" />
+          <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-sm font-bold cursor-pointer hover:opacity-80">
+            M
+          </div>
+          <FaSearch className="text-[#01b4e4] text-lg cursor-pointer hover:scale-110 transition-transform" />
+        </div>
       </div>
     </nav>
   );

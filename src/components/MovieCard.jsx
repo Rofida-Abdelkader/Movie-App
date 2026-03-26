@@ -1,46 +1,63 @@
 import { Link } from 'react-router-dom';
-import { Heart } from 'lucide-react';
-
-const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
 const MovieCard = ({ movie }) => {
-  return (
-    <div className="relative rounded-lg overflow-hidden shadow-md hover:scale-105 hover:shadow-xl transition-all duration-300 cursor-pointer bg-white dark:bg-slate-900 border dark:border-slate-800">
-      
-      {/* Poster with Link */}
-      <Link to={`/movie/${movie.id}`}>
-        <img
-          src={movie.poster_path 
-            ? `${IMAGE_BASE_URL}${movie.poster_path}` 
-            : 'https://via.placeholder.com/500x750?text=No+Image'}
-          alt={movie.title}
-          className="w-full h-[350px] object-cover"
-        />
-      </Link>
+  // Defensive programming: check if movie exists
+  if (!movie) return null;
 
-      {/* Rating Badge */}
-      <div className="absolute top-2 left-2 bg-[#032541]/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-md border border-green-500">
-        ⭐ {movie.vote_average?.toFixed(1)}
+  const rating = Math.round((movie.vote_average || 0) * 10);
+  
+  // Dynamic border color based on rating
+  const getBorderColor = (score) => {
+    if (score >= 70) return 'border-[#21d07a]';
+    if (score >= 40) return 'border-[#d2d531]';
+    return 'border-[#db2360]';
+  };
+
+  const releaseDate = movie.release_date 
+    ? new Date(movie.release_date).toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric' 
+      })
+    : 'No date';
+
+  const posterUrl = movie.poster_path 
+    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+    : 'https://via.placeholder.com/500x750?text=No+Image';
+
+  return (
+    <Link 
+      to={`/movie/${movie.id}`} 
+      className="flex flex-col group w-full mb-5"
+    >
+      <div className="relative">
+        <div className="rounded-lg overflow-hidden shadow-md bg-[#dbdbdb] aspect-[2/3]">
+          <img 
+            src={posterUrl} 
+            alt={movie.title || 'Movie Poster'}
+            loading="lazy"
+            className="w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-105"
+          />
+        </div>
+
+        {/* Circular Rating Score */}
+        <div className={`absolute -bottom-5 left-3 w-9 h-9 bg-[#081c22] rounded-full flex items-center justify-center border-[2px] ${getBorderColor(rating)} z-20 shadow-lg`}>
+          <div className="flex items-start">
+            <span className="text-white font-bold text-[13px]">{rating}</span>
+            <span className="text-white text-[6px] mt-1 ml-0.5">%</span>
+          </div>
+        </div>
       </div>
 
-      {/* Wishlist Button */}
-      <button className="absolute top-2 right-2 bg-black/40 text-white p-1.5 rounded-full hover:bg-red-500 hover:scale-110 transition-all">
-        <Heart size={16} />
-      </button>
-
-      {/* Info Section */}
-      <div className="p-3">
-        <Link to={`/movie/${movie.id}`}>
-          <h3 className="text-sm font-bold text-gray-800 dark:text-white truncate hover:text-[#01b4e4] transition">
-            {movie.title}
-          </h3>
-        </Link>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          {movie.release_date ? movie.release_date.slice(0, 4) : 'N/A'}
+      <div className="mt-7 px-1">
+        <h3 className="font-bold text-[16px] leading-tight hover:text-[#01b4e4] transition-colors line-clamp-2">
+          {movie.title || movie.name}
+        </h3>
+        <p className="text-gray-500 text-[14px] mt-1">
+          {releaseDate}
         </p>
       </div>
-
-    </div>
+    </Link>
   );
 };
 

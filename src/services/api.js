@@ -18,5 +18,6 @@ export const getMovieVideos = (id) => api.get(`/movie/${id}/videos`)
 export const getNowPlaying = (page = 1) => api.get('/movie/now_playing', { params: { page } })
 export const searchMovies = (query, page = 1) => api.get('/search/movie', { params: { query, page } })
 export const getGenres = () => api.get('/genre/movie/list')
-
+export const getPopular = () => api.get('/movie/popular');
+export const getFreeToWatch = () => api.get('/movie/upcoming');
 export default api
