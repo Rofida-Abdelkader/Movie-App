@@ -26,11 +26,7 @@ const Navbar = () => {
           <div className="border border-white px-1.5 py-0.5 rounded-[3px] text-[11px] font-bold hover:bg-white hover:text-[#032541] cursor-pointer transition-colors">
             EN
           </div>
-          <div className="logo">MovieApp</div>
-              <div className="menu">
-                {/* لينكاتك القديمة */}
-                <DarkModeToggle /> 
-          </div>
+              <DarkModeToggle />
           <FaBell className="cursor-pointer hover:text-[#01b4e4]" />
           <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-sm font-bold cursor-pointer hover:opacity-80">
             M

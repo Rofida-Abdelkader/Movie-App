@@ -56,8 +56,9 @@ const Home = () => {
     }, []);
 
     return (
-        <div className="w-full bg-white font-sans">
-            {/* 1. Hero Section */}
+        <div className="w-full bg-background text-foreground font-sans transition-colors duration-300">
+            
+            {/* 1. Hero Section - Search and Welcome */}
             <div className="relative h-[300px] md:h-[380px] bg-[#032541] flex items-center overflow-hidden">
                 <div 
                     className="absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-40" 
@@ -68,7 +69,7 @@ const Home = () => {
                 
                 <div className="relative z-10 text-white w-full max-w-[1300px] mx-auto px-10 text-left">
                     <h1 className="text-[3rem] font-bold mb-1 tracking-tight">Welcome.</h1>
-                    <h2 className="text-[2rem] font-semibold mb-10 opacity-90 leading-tight text-white">Millions of movies, TV shows and people to discover. Explore now.</h2>
+                    <h2 className="text-[2rem] font-semibold mb-10 opacity-90 leading-tight">Millions of movies, TV shows and people to discover. Explore now.</h2>
                     
                     <div className="relative w-full rounded-full bg-white flex items-center h-12 shadow-2xl overflow-hidden focus-within:ring-2 focus-within:ring-[#01b4e4] transition-all">
                         <input 
@@ -83,14 +84,14 @@ const Home = () => {
                 </div>
             </div>
 
-            {/* 2. Trending Section */}
-            <section className="relative pt-10 pb-5 bg-white">
-                <div className="max-w-[1300px] mx-auto px-10 relative z-10">
+            {/* 2. Trending Section - Corrected background & text colors */}
+            <section className="relative pt-10 pb-5 bg-background transition-colors duration-300">
+                <div className="max-w-[1300px] mx-auto px-10">
                     <div className="flex items-center gap-5 mb-6">
-                        <h2 className="text-2xl font-bold text-[#032541]">Trending</h2>
-                        <div className="flex border-2 border-[#032541] rounded-full font-bold text-sm overflow-hidden h-8">
-                            <button className="bg-[#032541] text-[#1ed5a9] px-6">Today</button>
-                            <button className="px-6 text-[#032541] hover:bg-gray-100">This Week</button>
+                        <h2 className="text-2xl font-bold">Trending</h2>
+                        <div className="flex border-2 border-[#032541] dark:border-[#01b4e4] rounded-full font-bold text-sm overflow-hidden h-8">
+                            <button className="bg-[#032541] dark:bg-[#01b4e4] text-[#1ed5a9] dark:text-[#032541] px-6">Today</button>
+                            <button className="px-6 hover:bg-muted transition-colors">This Week</button>
                         </div>
                     </div>
                     <div className="flex overflow-x-auto gap-6 pb-10 custom-scrollbar scroll-smooth">
@@ -103,7 +104,7 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* 3. Latest Trailers */}
+            {/* 3. Latest Trailers - Background changes on hover */}
             <section className="relative py-10 transition-all duration-1000 ease-in-out bg-[#032541]">
                 <div className="absolute inset-0 opacity-30 bg-cover bg-center transition-all duration-1000"
                     style={{ backgroundImage: `url(${activeBg})` }}></div>
@@ -114,7 +115,7 @@ const Home = () => {
                         <h2 className="text-2xl font-bold">Latest Trailers</h2>
                         <div className="flex border-2 border-[#1ed5a9] rounded-full font-bold text-sm overflow-hidden h-7">
                             <button className="bg-[#1ed5a9] text-[#032541] px-5">Popular</button>
-                            <button className="px-5 text-[#1ed5a9] hover:bg-white/10">Streaming</button>
+                            <button className="px-5 text-[#1ed5a9] hover:bg-white/10 transition-colors">Streaming</button>
                         </div>
                     </div>
                     <div className="flex overflow-x-auto gap-6 pb-6 custom-scrollbar-light">
@@ -136,13 +137,13 @@ const Home = () => {
             </section>
 
             {/* 4. What's Popular */}
-            <section className="py-10 bg-white">
+            <section className="py-10 bg-background transition-colors duration-300">
                 <div className="max-w-[1300px] mx-auto px-10">
                     <div className="flex items-center gap-5 mb-6">
-                        <h2 className="text-2xl font-bold text-[#032541]">What's Popular</h2>
-                        <div className="flex border-2 border-[#032541] rounded-full font-bold text-sm overflow-hidden h-8">
-                            <button className="bg-[#032541] text-[#1ed5a9] px-6">Streaming</button>
-                            <button className="px-6 text-[#032541] hover:bg-gray-100">On TV</button>
+                        <h2 className="text-2xl font-bold">What's Popular</h2>
+                        <div className="flex border-2 border-[#032541] dark:border-[#01b4e4] rounded-full font-bold text-sm overflow-hidden h-8">
+                            <button className="bg-[#032541] dark:bg-[#01b4e4] text-[#1ed5a9] dark:text-[#032541] px-6">Streaming</button>
+                            <button className="px-6 hover:bg-muted transition-colors">On TV</button>
                         </div>
                     </div>
                     <div className="flex overflow-x-auto gap-6 pb-10 custom-scrollbar scroll-smooth">
@@ -155,7 +156,7 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* 5. Join Today Section */}
+            {/* 5. Join Today Section - Fixed dark background */}
             <section className="relative min-h-[320px] text-white flex items-center overflow-hidden bg-[#1e0a3d]">
                 <div className="absolute inset-0 opacity-20 bg-cover bg-center"
                     style={{ backgroundImage: `url('https://www.themoviedb.org/t/p/w1920_and_h600_multi_faces/nS68U7p49X06L78X67X869a9G0A.jpg')` }}></div>
@@ -164,7 +165,7 @@ const Home = () => {
                     <div className="max-w-2xl text-left">
                         <h1 className="text-[2.5rem] font-bold mb-4">Join Today</h1>
                         <p className="text-lg font-normal mb-8 leading-relaxed opacity-90">
-                            Get access to maintain your own <span className="italic opacity-70">custom personal lists</span>, track what you've seen and search and filter for <span className="italic opacity-70">what to watch next</span>—regardless if it's in theatres, on TV or available on popular streaming services.
+                            Get access to maintain your own <span className="italic opacity-70">custom personal lists</span>, track what you've seen and search and filter for <span className="italic opacity-70">what to watch next</span>.
                         </p>
                         <button className="px-6 py-2 bg-[#805ad5] text-white font-bold rounded-md hover:bg-white hover:text-[#1e0a3d] transition-all shadow-lg">
                             Sign Up
@@ -176,22 +177,26 @@ const Home = () => {
                             <li>Enjoy TMDB ad free</li>
                             <li>Maintain a personal watchlist</li>
                             <li>Filter by your subscribed streaming services</li>
-                            <li>Log the movies and TV shows you've seen</li>
                             <li>Build custom lists</li>
-                            <li>Contribute to and improve our database</li>
                         </ul>
                     </div>
                 </div>
             </section>
 
-            {/* 6. Leaderboard Section */}
-            <section className="py-10 bg-white">
+            {/* 6. Leaderboard Section - Fixed Text and Progress Bar Colors */}
+            <section className="py-10 bg-background transition-colors duration-300">
                 <div className="max-w-[1300px] mx-auto px-10">
                     <div className="flex items-center gap-4 mb-8">
-                        <h2 className="text-2xl font-bold text-black">Leaderboard</h2>
+                        <h2 className="text-2xl font-bold">Leaderboard</h2>
                         <div className="flex flex-col text-[12px] font-bold">
-                            <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-[#1ed5a9]"></span> <span>All Time Edits</span></div>
-                            <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-[#f87171]"></span> <span>Edits This Week</span></div>
+                            <div className="flex items-center gap-2">
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#1ed5a9]"></span> 
+                                <span className="text-foreground/80">All Time Edits</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#f87171]"></span> 
+                                <span className="text-foreground/80">Edits This Week</span>
+                            </div>
                         </div>
                     </div>
 
@@ -213,19 +218,21 @@ const Home = () => {
                                         {user.name}
                                     </h3>
                                     <div className="space-y-1.5 mt-2">
+                                        {/* All Time Progress Bar */}
                                         <div className="flex items-center gap-3">
-                                            <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                            <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                                                 <div className="h-full bg-gradient-to-r from-[#c0fecf] to-[#1ed5a9]" style={{ width: user.allTimeWidth }}></div>
                                             </div>
-                                            <span className="text-[13px] font-bold w-16 text-right text-black/80">
+                                            <span className="text-[13px] font-bold w-16 text-right text-foreground/70">
                                                 {user.allTime.toLocaleString()}
                                             </span>
                                         </div>
+                                        {/* Weekly Progress Bar */}
                                         <div className="flex items-center gap-3">
-                                            <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                            <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                                                 <div className="h-full bg-[#f87171]" style={{ width: user.weeklyWidth }}></div>
                                             </div>
-                                            <span className="text-[13px] font-bold w-16 text-right text-black/80">
+                                            <span className="text-[13px] font-bold w-16 text-right text-foreground/70">
                                                 {user.weekly.toLocaleString()}
                                             </span>
                                         </div>
@@ -239,5 +246,5 @@ const Home = () => {
         </div>
     );
 };
-
+    
 export default Home;

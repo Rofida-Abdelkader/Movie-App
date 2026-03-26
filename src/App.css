@@ -18,17 +18,24 @@
   padding: 0;
 }
 
+:root {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --card-bg: #f9f9f9;
+}
+
 body {
   font-family: 'Segoe UI', Tahoma, sans-serif;
-  background: #f9f9f7;
-  color: #222;
-  transition: background 0.3s, color 0.3s;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
   direction: rtl;
 }
 
 body.dark {
-  background: #12121e;
-  color: #e8e8e8;
+  --bg-color: #121212;
+  --text-color: #ffffff;
+  --card-bg: #1e1e1e;
 }
 
 

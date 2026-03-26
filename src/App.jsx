@@ -7,7 +7,7 @@ import BackToTop from './components/BackToTop';
 
 function App() {
   return (
-    <div className="min-h-screen flex flex-col font-sans">
+    <div className="min-h-screen bg-white dark:bg-[#0d1b2a] text-black dark:text-white transition-colors duration-500">
       <Navbar />
       <main className="flex-1">
         <Routes>
