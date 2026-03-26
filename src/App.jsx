@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-import './App.css'
-
-function App() {
-
-  return (
-    <>
-      
-    </>
-  )
-}
-
-export default App
-=======
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -35,5 +21,5 @@ function App() {
   );
 }
 
+
 export default App;
->>>>>>> e6561b727209c11887412709098969e6f5191a5f
