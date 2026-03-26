@@ -6,8 +6,9 @@ import Home from './pages/Home';
 import MovieDetails from './pages/MovieDetails.jsx'; 
 import Login from './pages/Login';
 import Register from './pages/Register';
-import ResetPassword from './pages/ResetPassword'; // ضيفي السطر ده
+import ResetPassword from './pages/ResetPassword'; 
 import BackToTop from './components/BackToTop';
+import Wishlist from './pages/Wishlist';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/reset-password" element={<ResetPassword />} /> {/* وضيفي السطر ده */}
           <Route path="*" element={<NotFound />} />
+          <Route path="/wishlist" element={<Wishlist />} />
         </Routes>
       </main>
       <BackToTop />
