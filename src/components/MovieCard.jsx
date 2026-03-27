@@ -31,7 +31,7 @@ const MovieCard = ({ movie }) => {
       className="flex flex-col group w-full mb-5"
     >
       <div className="relative">
-        <div className="rounded-lg overflow-hidden shadow-md bg-[#dbdbdb] aspect-[2/3]">
+        <div className="rounded-lg overflow-hidden shadow-md bg-[#dbdbdb] aspect-2/3">
           <img 
             src={posterUrl} 
             alt={movie.title || 'Movie Poster'}

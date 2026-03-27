@@ -1,39 +1,117 @@
-import React from 'react';
-import { FaPlus, FaSearch, FaBell } from 'react-icons/fa';
+import { Link } from "react-router-dom"
+import { useState } from "react"
+import { FaBell, FaBars, FaTimes } from "react-icons/fa"
+import SearchBar from "./SearchBar"
+import {DarkModeToggle} from "./DarkModeToggle"
+import LanguageDropdown from "./LanguageDropdown"
+import useLanguageStore from "@/store/Language"
+import useAuthStore from "@/store/authStore"
 
-const Navbar = () => {
-  return (
-    <nav className="bg-[#032541] h-[64px] flex items-center sticky top-0 z-50">
-      <div className="max-w-[1300px] mx-auto w-full px-8 flex justify-between items-center">
-        
-        {/* Left Side: Logo & Links */}
-        <div className="flex items-center gap-8">
-          <div className="flex flex-col leading-none font-black text-[#01b4e4] text-2xl tracking-tighter cursor-pointer">
-            <span>TMDB</span>
-          </div>
-          <ul className="hidden md:flex gap-6 text-white font-semibold text-[15px]">
-            <li className="hover:text-[#01b4e4] cursor-pointer">Movies</li>
-            <li className="hover:text-[#01b4e4] cursor-pointer">TV Shows</li>
-            <li className="hover:text-[#01b4e4] cursor-pointer">People</li>
-            <li className="hover:text-[#01b4e4] cursor-pointer">More</li>
-          </ul>
-        </div>
+export default function Navbar(){
+  const language = useLanguageStore((state) => state.language);
+  const setLanguage = useLanguageStore((state) => state.setLanguage);
+  const [menuOpen,setMenuOpen] = useState(false)
+  const { user, logout } = useAuthStore();
 
-        {/* Right Side: Icons & Profile */}
-        <div className="flex items-center gap-7 text-white">
-          <FaPlus className="cursor-pointer hover:text-[#01b4e4] text-sm" />
-          <div className="border border-white px-1.5 py-0.5 rounded-[3px] text-[11px] font-bold hover:bg-white hover:text-[#032541] cursor-pointer transition-colors">
-            EN
-          </div>
-          <FaBell className="cursor-pointer hover:text-[#01b4e4]" />
-          <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-sm font-bold cursor-pointer hover:opacity-80">
-            M
-          </div>
-          <FaSearch className="text-[#01b4e4] text-lg cursor-pointer hover:scale-110 transition-transform" />
-        </div>
-      </div>
-    </nav>
-  );
-};
+ return(
 
-export default Navbar;
+ <nav className="bg-gray-400 h-16 dark:bg-[#0d1b2a] flex items-center sticky top-0 z-50">
+
+  <div className="mx-auto w-full px-6 flex justify-between items-center">
+
+   {/* Logo */}
+   <Link to="/" className="font-black text-[#01b4e4] text-2xl">
+    TMDB
+   </Link>
+
+   {/* Desktop Links */}
+   <ul className="hidden md:flex gap-6 text-black dark:text-white font-semibold">
+    <Link to="/" className="hover:text-[#01b4e4]">
+     Movies
+    </Link>
+    <Link to="/wishlist" className="hover:text-[#01b4e4]">
+     Wishlist
+    </Link>
+   </ul>
+
+   {/* Desktop Right Side */}
+   <div className="hidden md:flex items-center gap-6">
+
+    <SearchBar/>
+    <LanguageDropdown
+        language={language}
+        setLanguage={setLanguage}
+      />
+     {/* Right Side: Auth & Tools */}
+        <div className="flex items-center gap-6 text-white font-semibold text-[15px]">
+          {/* روابط الـ Auth */}
+          {!user ? (
+            <>
+              <Link to="/login" className="hover:text-[#01b4e4] transition-colors">
+                Login
+              </Link>
+              <Link to="/register" className="hover:text-[#01b4e4] transition-colors">
+                Join TMDB
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link to="/account" className="hover:text-[#01b4e4] transition-colors">
+                Account
+              </Link>
+              <button
+                onClick={logout}
+                className="hover:text-[#01b4e4] transition-colors cursor-pointer"
+              >
+                Logout
+              </button>
+            </>
+          )}
+          </div>
+
+    <DarkModeToggle/>
+
+    <FaBell className="cursor-pointer"/>
+   </div>
+
+   {/* Mobile Menu Button */}
+   <div className="md:hidden flex items-center gap-4">
+
+    <FaBars
+     className="text-xl cursor-pointer"
+     onClick={()=>setMenuOpen(true)}
+    />
+
+   </div>
+
+  </div>
+
+  {/* Mobile Menu */}
+       
+  {menuOpen && (
+
+   <div className="absolute top-0 left-0 w-full h-screen bg-black/90 text-white flex flex-col p-8 gap-6">
+
+    <FaTimes
+     className="text-2xl self-end cursor-pointer"
+     onClick={()=>setMenuOpen(false)}
+    />
+
+    <Link to="/" onClick={()=>setMenuOpen(false)}>Home</Link>
+    <Link to="/movies" onClick={()=>setMenuOpen(false)}>Movies</Link>
+    <Link to="/tv" onClick={()=>setMenuOpen(false)}>TV Shows</Link>
+    <Link to="/people" onClick={()=>setMenuOpen(false)}>People</Link>
+    <Link to="/wishlist" onClick={()=>setMenuOpen(false)}>Wishlist</Link>
+
+    <SearchBar/>
+
+    <Link to="/login">Login</Link>
+    <Link to="/register">Register</Link>
+
+   </div>
+
+  )}
+
+ </nav>
+ )
+}
