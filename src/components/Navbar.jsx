@@ -71,11 +71,9 @@ const Navbar = () => {
 
             {/* User Profile Circle */}
             {user && (
-              <Link to="/account">
                 <div className="w-8 h-8 rounded-full bg-[#c0392b] flex items-center justify-center text-sm font-bold cursor-pointer hover:ring-2 hover:ring-white transition-all shadow-md">
                   {user?.username?.charAt(0).toUpperCase()}
                 </div>
-              </Link>
             )}
 
             <FaSearch className="text-[#01b4e4] text-lg cursor-pointer hover:scale-125 transition-transform" />
