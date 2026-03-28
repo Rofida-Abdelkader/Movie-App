@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 const Login = () => {
   const { t } = useTranslation();
   const toast = useToast();
-  const [form, setForm] = useState({ username: '', password: '' })
+  const [form, setForm] = useState({ email: '', password: '' })
   const navigate = useNavigate();
   const { login, loading, error, clearError } = useAuthStore();
   const handleChange = (e) => {
@@ -18,7 +18,7 @@ const Login = () => {
     e.preventDefault();
 
     const result = await login({
-      email: form.username,
+      email: form.email,
       password: form.password,
     });
 
@@ -40,7 +40,7 @@ const Login = () => {
     if (!requestToken) { toast.error(t("login.could_not_reach_tmdb")); return; }
 
     const validatedToken = await validateTmdbToken({
-      username: form.username,
+      username: form.email,
       password: form.password,
       requestToken,
     });
@@ -85,11 +85,11 @@ const Login = () => {
 
       <form className="max-w-full space-y-6" onSubmit={handleSubmit}>
         <div>
-          <label className="block mb-1 text-[16px] text-gray-700 dark:text-gray-300">{t("login.username")}</label>
+          <label className="block mb-1 text-[16px] text-gray-700 dark:text-gray-300">{t("login.email")}</label>
           <input
-            type="text"
-            name="username"
-            value={form.username}
+            type="email"
+            name="email"
+            value={form.email}
             onChange={handleChange}
             required
             className="w-full border border-gray-300 dark:border-gray-800 bg-white dark:bg-[#0d141e] rounded-[4px] p-2 outline-none focus:border-[#01b4e4] transition-all text-black dark:text-white"
