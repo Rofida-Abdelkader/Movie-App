@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const NotFound = () => {
+  const { t } = useTranslation();
   return (
     // Main container: centering content vertically and horizontally
-    <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 text-center bg-background transition-colors duration-300">
+    <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 text-center bg-background transition-colors duration-300 rtl:text-right">
       
       {/* 404 Error Number: Using TMDB primary blue color */}
       <h1 className="text-9xl font-black text-[#01b4e4] drop-shadow-md animate-pulse">
@@ -13,11 +15,11 @@ const NotFound = () => {
       
       {/* Error Message Section */}
       <div className="mt-4">
-        <h2 className="text-3xl font-bold text-foreground md:text-4xl">
-          Oops! Page Not Found
+        <h2 className="text-3xl font-bold text-foreground md:text-4xl text-center">
+          {t('not_found.title')}
         </h2>
-        <p className="mt-4 text-lg text-muted-foreground max-w-md mx-auto">
-          The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
+        <p className="mt-4 text-lg text-muted-foreground max-w-md mx-auto text-center">
+          {t('not_found.desc')}
         </p>
       </div>
 
@@ -26,7 +28,7 @@ const NotFound = () => {
         to="/"
         className="mt-8 px-8 py-3 bg-gradient-to-r from-[#1ed5a9] to-[#01b4e4] text-[#032541] font-bold rounded-full hover:scale-105 transition-transform shadow-lg"
       >
-        Back to Home
+        {t('not_found.back')}
       </Link>
 
       {/* Background Decoration: Subtle logo watermark */}

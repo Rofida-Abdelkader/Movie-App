@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
 import useWishlistStore from '../store/wishlistStore';
 import useToast from '../hooks/useToast';
+import { useTranslation } from 'react-i18next';
 
 const AccountDetails = () => {
   const navigate = useNavigate();
   const toast = useToast();
+  const { t } = useTranslation();
 
   const { user, logout, updateAccount, loading } = useAuthStore();
   const { clearWishlist } = useWishlistStore();
@@ -37,20 +39,20 @@ const AccountDetails = () => {
     e.preventDefault();
     const result = await updateAccount({ username: form.username, email: form.email });
     if (result.success) {
-      toast.success('Account details updated!');
+      toast.success(t('account.details_updated'));
     } else {
-      toast.error(result.error || 'Update failed.');
+      toast.error(result.error || t('account.update_failed'));
     }
   };
 
   const handleSavePassword = async (e) => {
     e.preventDefault();
     if (passwordForm.newPassword.length < 4) {
-      toast.error('New password must be at least 4 characters.');
+      toast.error(t('account.pass_min_char'));
       return;
     }
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      toast.error('New passwords do not match.');
+      toast.error(t('account.pass_mismatch'));
       return;
     }
 
@@ -59,7 +61,7 @@ const AccountDetails = () => {
     if (savedUserStr) {
       const savedUser = JSON.parse(savedUserStr);
       if (savedUser.password && savedUser.password !== passwordForm.currentPassword) {
-        toast.error('Incorrect current password.');
+        toast.error(t('account.pass_incorrect'));
         return;
       }
 
@@ -70,10 +72,10 @@ const AccountDetails = () => {
 
     const result = await updateAccount({ password: passwordForm.newPassword });
     if (result.success) {
-      toast.success('Password changed successfully!');
+      toast.success(t('account.pass_changed'));
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } else {
-      toast.error(result.error || 'Password change failed.');
+      toast.error(result.error || t('account.pass_change_failed'));
     }
   };
 
@@ -81,12 +83,12 @@ const AccountDetails = () => {
     logout();
     clearWishlist();
     localStorage.removeItem("user");
-    toast.info('You have been logged out.');
+    toast.info(t('account.logged_out'));
     navigate('/');
   };
 
   const inputCls =
-    'w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-[4px] p-2 outline-none focus:border-[#01b4e4] transition-all text-[15px] dark:text-white';
+    'w-full border border-gray-300 dark:border-gray-800 bg-white dark:bg-[#0d141e] rounded-[4px] p-2 outline-none focus:border-[#01b4e4] transition-all text-[15px] text-black dark:text-white rtl:text-right';
 
   return (
     <div className="font-sans pb-10 min-h-screen bg-transparent">
@@ -99,12 +101,12 @@ const AccountDetails = () => {
               : user.username?.[0]?.toUpperCase() || '?'
             }
           </div>
-          <div className="text-white">
+          <div className="text-white rtl:text-right">
             <h2 className="text-[2rem] md:text-[2.5rem] font-bold leading-tight flex items-center gap-3">
               {user.username}
             </h2>
-            <p className="text-gray-400 text-sm md:text-base mt-1 font-semibold">
-              Member since {new Date().toLocaleString('default', { month: 'long' })} {new Date().getFullYear()}
+            <p className="text-gray-400 text-sm md:text-base mt-1 font-semibold ">
+              {t('account.member_since')} {new Date().toLocaleString('default', { month: 'long' })} {new Date().getFullYear()}
             </p>
           </div>
         </div>
@@ -113,50 +115,50 @@ const AccountDetails = () => {
       <div className="max-w-[1300px] mx-auto px-6 py-10 flex flex-col md:flex-row gap-8">
         {/* ── Sidebar TMDB Style ──────────────────────────────────────── */}
         <div className="w-full md:w-[260px] shrink-0">
-          <div className="border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden shadow-sm bg-white dark:bg-[#032541]/50">
-            <div className="bg-[#01b4e4] px-5 py-4 text-white font-bold text-[1.2rem] flex items-center gap-2">
-              Settings
+          <div className="border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden shadow-sm bg-white dark:bg-[#0d253f]">
+            <div className="bg-[#01b4e4] px-5 py-4 text-white font-bold text-[1.2rem] flex items-center gap-2 rtl:text-right">
+              {t('account.settings')}
             </div>
             <ul className="flex flex-col py-2">
               <li
                 onClick={() => setActiveTab('details')}
-                className={`px-5 py-3 cursor-pointer transition-all border-l-4 ${activeTab === 'details'
+                className={`px-5 py-3 cursor-pointer transition-all border-l-4 rtl:border-r-4 rtl:border-l-0 ${activeTab === 'details'
                   ? 'border-[#01b4e4] font-bold bg-gray-100 dark:bg-gray-800 text-[#000] dark:text-white'
                   : 'border-transparent hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300'
                   }`}
               >
-                Edit Profile
+                {t('account.edit_profile')}
               </li>
               <li
                 onClick={() => setActiveTab('password')}
-                className={`px-5 py-3 cursor-pointer transition-all border-l-4 ${activeTab === 'password'
+                className={`px-5 py-3 cursor-pointer transition-all border-l-4 rtl:border-r-4 rtl:border-l-0 ${activeTab === 'password'
                   ? 'border-[#01b4e4] font-bold bg-gray-100 dark:bg-gray-800 text-[#000] dark:text-white'
                   : 'border-transparent hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300'
                   }`}
               >
-                Change Password
+                {t('account.change_password')}
               </li>
               <li
-                className="px-5 py-3 mt-2 border-t border-l-4 border-transparent border-t-gray-100 dark:border-t-gray-800 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20 transition-all text-red-500 font-bold"
+                className="px-5 py-3 mt-2 border-t border-l-4 rtl:border-r-4 rtl:border-l-0 border-transparent border-t-gray-100 dark:border-t-gray-800 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20 transition-all text-red-500 font-bold"
                 onClick={handleLogout}
               >
-                Logout
+                {t('account.logout')}
               </li>
             </ul>
           </div>
         </div>
 
         {/* ── Main Content Area ────────────────────────────────────── */}
-        <div className="flex-1 bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-8 max-w-[800px]">
+        <div className="flex-1 bg-white dark:bg-[#0d253f] border border-gray-200 dark:border-gray-800 rounded-lg shadow-sm p-8 max-w-[800px] rtl:text-right">
           <h2 className="text-[1.8rem] font-bold mb-6 text-[#000] dark:text-white pb-3 border-b border-gray-100 dark:border-gray-700">
-            {activeTab === 'details' ? 'Edit Profile' : 'Change Password'}
+            {activeTab === 'details' ? t('account.edit_profile') : t('account.change_password')}
           </h2>
 
           {/* Account Details Tab */}
           {activeTab === 'details' && (
             <form className="space-y-6" onSubmit={handleSaveDetails}>
               <div>
-                <label className="block mb-2 text-[15px] font-medium text-gray-700 dark:text-gray-300">Username</label>
+                <label className="block mb-2 text-[15px] font-medium text-gray-700 dark:text-gray-300">{t('account.username')}</label>
                 <input
                   type="text"
                   name="username"
@@ -167,7 +169,7 @@ const AccountDetails = () => {
                 />
               </div>
               <div className="pb-4">
-                <label className="block mb-2 text-[15px] font-medium text-gray-700 dark:text-gray-300">Email</label>
+                <label className="block mb-2 text-[15px] font-medium text-gray-700 dark:text-gray-300">{t('account.email')}</label>
                 <input
                   type="email"
                   name="email"
@@ -180,9 +182,9 @@ const AccountDetails = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-[#01b4e4] text-white px-8 py-2.5 rounded-[4px] font-bold hover:bg-[#081c22] transition-colors shadow-md disabled:opacity-60"
+                className="bg-[#01b4e4] text-white px-8 py-2.5 rounded-[4px] font-bold hover:bg-[#081c22] transition-colors shadow-md disabled:opacity-60 rtl:ml-auto"
               >
-                {loading ? 'Saving…' : 'Save Changes'}
+                {loading ? t('account.saving') : t('account.save_changes')}
               </button>
             </form>
           )}
@@ -191,7 +193,7 @@ const AccountDetails = () => {
           {activeTab === 'password' && (
             <form className="space-y-6" onSubmit={handleSavePassword}>
               <div>
-                <label className="block mb-2 text-[15px] font-medium text-gray-700 dark:text-gray-300">Current Password</label>
+                <label className="block mb-2 text-[15px] font-medium text-gray-700 dark:text-gray-300">{t('account.current_password')}</label>
                 <input
                   type="password"
                   name="currentPassword"
@@ -202,7 +204,7 @@ const AccountDetails = () => {
                 />
               </div>
               <div className="pt-2">
-                <label className="block mb-2 text-[15px] font-medium text-gray-700 dark:text-gray-300">New Password</label>
+                <label className="block mb-2 text-[15px] font-medium text-gray-700 dark:text-gray-300">{t('account.new_password')}</label>
                 <input
                   type="password"
                   name="newPassword"
@@ -214,7 +216,7 @@ const AccountDetails = () => {
                 />
               </div>
               <div className="pb-4">
-                <label className="block mb-2 text-[15px] font-medium text-gray-700 dark:text-gray-300">Confirm New Password</label>
+                <label className="block mb-2 text-[15px] font-medium text-gray-700 dark:text-gray-300">{t('account.confirm_new_password')}</label>
                 <input
                   type="password"
                   name="confirmPassword"
@@ -229,15 +231,15 @@ const AccountDetails = () => {
                 />
                 {passwordForm.confirmPassword &&
                   passwordForm.newPassword !== passwordForm.confirmPassword && (
-                    <p className="text-red-500 text-xs mt-1 font-bold">Passwords do not match.</p>
+                    <p className="text-red-500 text-xs mt-1 font-bold">{t('account.pass_mismatch')}</p>
                   )}
               </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-[#01b4e4] text-white px-8 py-2.5 rounded-[4px] font-bold hover:bg-[#081c22] transition-colors shadow-md disabled:opacity-60"
+                className="bg-[#01b4e4] text-white px-8 py-2.5 rounded-[4px] font-bold hover:bg-[#081c22] transition-colors shadow-md disabled:opacity-60 rtl:ml-auto"
               >
-                {loading ? 'Updating…' : 'Update Password'}
+                {loading ? t('account.updating') : t('account.update_password')}
               </button>
             </form>
           )}

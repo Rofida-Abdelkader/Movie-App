@@ -6,9 +6,10 @@ import MovieCard from "../components/MovieCard"
 import Pagination from "../components/Pagination"
 import { SkeletonCards } from "@/components/SkeletonCards"
 import useLanguageStore from "@/store/Language"
+import { useTranslation } from "react-i18next"
 
 export default function Search(){
-
+    const { t } = useTranslation()
     const [params] = useSearchParams()
     const [loading, setLoading] = useState(true)
     const query = params.get("q")
@@ -28,6 +29,7 @@ export default function Search(){
     setMovies(res.data.results)
     setLoading(false)
     }catch(error){
+      console.error("Search error:", error)
       setLoading(false)
     }
   }
@@ -38,11 +40,11 @@ export default function Search(){
 
   return(
 
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto p-6 min-h-screen">
 
-    {<h2 className="text-2xl font-bold mb-6">
-      Results for "{query}"
-    </h2>}
+    <h2 className="text-2xl font-bold mb-6 text-black dark:text-white transition-colors">
+      {t('search.results_for', 'Results for')} "{query}"
+    </h2>
 
     <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
 

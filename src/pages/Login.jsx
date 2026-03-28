@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
 import useToast from '../hooks/useToast';
-
+import { useTranslation } from 'react-i18next';
 const Login = () => {
+  const { t } = useTranslation();
   const toast = useToast();
   const [form, setForm] = useState({ username: '', password: '' })
   const navigate = useNavigate();
@@ -17,14 +18,12 @@ const Login = () => {
     e.preventDefault();
 
     const savedUser = JSON.parse(localStorage.getItem("user"));
-    console.log("savedUser:", savedUser);
-    console.log("form:", form);
     if (
       !savedUser ||
       savedUser.username !== form.username ||
       savedUser.password !== form.password
     ) {
-      toast.error("Invalid credentials");
+      toast.error(t("login.invalid_credentials"));
       return;
     }
 
@@ -35,10 +34,10 @@ const Login = () => {
     });
 
     if (result.success) {
-      toast.success('Welcome back! 👋');
+      toast.success(t("login.welcome_back"));
       navigate('/');
     } else {
-      toast.error(result.error || 'Login failed.');
+      toast.error(result.error || t("login.login_failed"));
     }
   };
 
@@ -49,45 +48,42 @@ const Login = () => {
 
     // Server-side flow: validate with username + password
     const requestToken = await requestTmdbToken();
-    if (!requestToken) { toast.error('Could not reach TMDB.'); return; }
+    if (!requestToken) { toast.error(t("login.could_not_reach_tmdb")); return; }
 
     const validatedToken = await validateTmdbToken({
       username: form.username,
       password: form.password,
       requestToken,
     });
-    if (!validatedToken) { toast.error('Invalid TMDB credentials.'); return; }
+    if (!validatedToken) { toast.error(t("login.invalid_tmdb_credentials")); return; }
 
     const result = await createTmdbSession(validatedToken);
     if (result.success) {
-      toast.success('Logged in via TMDB! 🎬');
+      toast.success(t("login.logged_in_via_tmdb"));
       navigate('/');
     } else {
-      toast.error(result.error || 'TMDB session failed.');
+      toast.error(result.error || t("login.tmdb_session_failed"));
     }
   };
 
   return (
     <div className="max-w-[1300px] mx-auto px-10 py-8 font-sans text-[#000] dark:text-white">
-      <h2 className="text-[1.5rem] font-bold mb-4">Login to your account</h2>
+      <h2 className="text-[1.5rem] font-bold mb-4">{t("login.title")}</h2>
 
       <div className="text-[1.1rem] leading-snug space-y-4 mb-8">
         <p>
-          In order to use the editing and rating capabilities of TMDB, as well as
-          get personal recommendations you will need to login to your account. If
-          you do not have an account, registering for an account is free and
-          simple.{' '}
+          {t("login.description_1")}
           <Link to="/register" className="text-[#01b4e4] hover:underline">
-            Click here
+            {t("login.click_here")}
           </Link>{' '}
-          to get started.
+          {t("login.to_get_started")}
         </p>
         <p>
-          If you signed up but didn't get your verification email,{' '}
+          {t("login.description_2")}
           <Link to="/reset-password" className="text-[#01b4e4] hover:underline">
-            click here
+            {t("login.click_here")}
           </Link>{' '}
-          to have it resent.
+          {t("login.to_have_it_resent")}
         </p>
       </div>
 
@@ -100,26 +96,26 @@ const Login = () => {
 
       <form className="max-w-full space-y-6" onSubmit={handleSubmit}>
         <div>
-          <label className="block mb-1 text-[16px]">Username</label>
+          <label className="block mb-1 text-[16px] text-gray-700 dark:text-gray-300">{t("login.username")}</label>
           <input
             type="text"
             name="username"
             value={form.username}
             onChange={handleChange}
             required
-            className="w-full border border-gray-300 rounded-[4px] p-2 outline-none focus:border-[#01b4e4] transition-all"
+            className="w-full border border-gray-300 dark:border-gray-800 bg-white dark:bg-[#0d141e] rounded-[4px] p-2 outline-none focus:border-[#01b4e4] transition-all text-black dark:text-white"
           />
         </div>
 
         <div>
-          <label className="block mb-1 text-[16px]">Password</label>
+          <label className="block mb-1 text-[16px] text-gray-700 dark:text-gray-300">{t("login.password")}</label>
           <input
             type="password"
             name="password"
             value={form.password}
             onChange={handleChange}
             required
-            className="w-full border border-gray-300 rounded-[4px] p-2 outline-none focus:border-[#01b4e4] transition-all"
+            className="w-full border border-gray-300 dark:border-gray-800 bg-white dark:bg-[#0d141e] rounded-[4px] p-2 outline-none focus:border-[#01b4e4] transition-all text-black dark:text-white"
           />
         </div>
 
@@ -129,14 +125,14 @@ const Login = () => {
             disabled={loading}
             className="bg-[#01b4e4] text-white px-5 py-1.5 rounded-[4px] font-bold hover:bg-[#081c22] transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {loading ? 'Logging in…' : 'Login'}
+            {loading ? t("login.logging_in") : t("login.login")}
           </button>
 
           <Link
             to="/reset-password"
             className="text-[#01b4e4] hover:underline text-[16px]"
           >
-            Reset password
+            {t("login.reset_password")}
           </Link>
 
           {/* ── BONUS: TMDB login button ──────────────────────── */}
@@ -144,9 +140,9 @@ const Login = () => {
             type="button"
             onClick={handleTmdbLogin}
             disabled={loading}
-            className="ml-auto text-sm text-gray-500 hover:text-[#01b4e4] underline transition-colors disabled:opacity-60"
+            className="ml-auto text-sm text-gray-500 dark:text-gray-400 hover:text-[#01b4e4] underline transition-colors disabled:opacity-60"
           >
-            Login with TMDB account
+            {t("login.login_with_tmdb")}
           </button>
         </div>
       </form>

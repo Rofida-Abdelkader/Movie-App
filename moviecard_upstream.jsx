@@ -1,9 +1,6 @@
-import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+﻿import { Link } from 'react-router-dom';
 
 const MovieCard = ({ movie }) => {
-  const { t } = useTranslation();
-  
   // Defensive programming: check if movie exists
   if (!movie) return null;
 
@@ -17,12 +14,12 @@ const MovieCard = ({ movie }) => {
   };
 
   const releaseDate = movie.release_date 
-    ? new Date(movie.release_date).toLocaleDateString(t('movie_details.english') === 'English' ? 'en-US' : 'ar-EG', { 
+    ? new Date(movie.release_date).toLocaleDateString('en-US', { 
         month: 'short', 
         day: 'numeric', 
         year: 'numeric' 
       })
-    : t('movie_card.no_date');
+    : 'No date';
 
   const posterUrl = movie.poster_path 
     ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
@@ -31,7 +28,7 @@ const MovieCard = ({ movie }) => {
   return (
     <Link 
       to={`/movie/${movie.id}`} 
-      className="flex flex-col group w-full mb-5 transition-colors duration-300 rtl:text-right"
+      className="flex flex-col group w-full mb-5 transition-colors duration-300"
     >
       <div className="relative">
         <div className="rounded-lg overflow-hidden shadow-md bg-[#dbdbdb] aspect-2/3">
@@ -43,7 +40,7 @@ const MovieCard = ({ movie }) => {
           />
         </div>
 
-        <div className={`absolute -bottom-5 left-3 rtl:right-3 rtl:left-auto w-9 h-9 bg-[#081c22] rounded-full flex items-center justify-center border-[2px] ${getBorderColor(rating)} z-20 shadow-lg`}>
+        <div className={`absolute -bottom-5 left-3 w-9 h-9 bg-[#081c22] rounded-full flex items-center justify-center border-[2px] ${getBorderColor(rating)} z-20 shadow-lg`}>
           <div className="flex items-start">
             <span className="text-white font-bold text-[13px]">{rating}</span>
             <span className="text-white text-[6px] mt-1 ml-0.5">%</span>
@@ -51,7 +48,7 @@ const MovieCard = ({ movie }) => {
         </div>
       </div>
 
-      <div className="mt-7 px-1 text-left rtl:text-right">
+      <div className="mt-7 px-1">
         <h3 className="font-bold text-[16px] leading-tight text-gray-900 dark:text-white hover:text-[#01b4e4] dark:hover:text-[#01b4e4] transition-colors line-clamp-2">
           {movie.title || movie.name}
         </h3>

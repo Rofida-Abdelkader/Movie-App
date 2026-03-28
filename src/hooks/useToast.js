@@ -5,7 +5,7 @@ import { create } from 'zustand';
  * ──────────────────────────────────────────────────────────────
  * Lightweight toast/snackbar system — no external library needed.
  *
- * Usage (anywhere in your app):
+ * Usage:
  *   import useToast from '../hooks/useToast';
  *
  *   const toast = useToast();
@@ -26,9 +26,9 @@ const useToastStore = create((set) => ({
       toasts: [
         ...state.toasts,
         {
-          id:       Date.now() + Math.random(),
-          message:  toast.message,
-          type:     toast.type || 'info',   // 'success' | 'error' | 'info' | 'warning'
+          id: Date.now() + Math.random(),
+          message: toast.message,
+          type: toast.type || 'info',   // 'success' | 'error' | 'info' | 'warning'
           duration: toast.duration || 3000,
         },
       ],
@@ -48,10 +48,10 @@ const useToast = () => {
     add({ message, type, duration });
 
   return {
-    success: (message, duration)  => show(message, 'success', duration),
-    error:   (message, duration)  => show(message, 'error',   duration),
-    info:    (message, duration)  => show(message, 'info',    duration),
-    warning: (message, duration)  => show(message, 'warning', duration),
+    success: (message, duration) => show(message, 'success', duration),
+    error: (message, duration) => show(message, 'error', duration),
+    info: (message, duration) => show(message, 'info', duration),
+    warning: (message, duration) => show(message, 'warning', duration),
   };
 };
 

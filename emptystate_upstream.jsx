@@ -1,6 +1,4 @@
-import { useTranslation } from 'react-i18next';
-
-export function EmptyState({ icon, title, description, action, onAction, variant = 'default' }) {
+﻿export function EmptyState({ icon, title, description, action, onAction, variant = 'default' }) {
   return (
     <div className={`empty-state empty-state--${variant}`}>
       {icon && <div className="empty-state__icon">{icon}</div>}
@@ -16,7 +14,6 @@ export function EmptyState({ icon, title, description, action, onAction, variant
 }
 
 export function NoResultsEmpty({ onClear }) {
-  const { t } = useTranslation();
   return (
     <EmptyState
       icon={
@@ -26,9 +23,9 @@ export function NoResultsEmpty({ onClear }) {
           <path d="M11 8v6M8 11h6" />
         </svg>
       }
-      title={t('empty_state.no_results_title')}
-      description={t('empty_state.no_results_desc')}
-      action={t('empty_state.clear_filter')}
+      title="No Results Found"
+      description="No results matched your search. Try different keywords."
+      action="Clear Filter"
       onAction={onClear}
       variant="search"
     />
@@ -36,7 +33,6 @@ export function NoResultsEmpty({ onClear }) {
 }
 
 export function EmptyListEmpty({ onAdd }) {
-  const { t } = useTranslation();
   return (
     <EmptyState
       icon={
@@ -44,9 +40,9 @@ export function EmptyListEmpty({ onAdd }) {
           <path d="M12 5v14M5 12h14" />
         </svg>
       }
-      title={t('empty_state.list_empty_title')}
-      description={t('empty_state.list_empty_desc')}
-      action={t('empty_state.add_item')}
+      title="List is Empty"
+      description="Add your first item and get started."
+      action="+ Add Item"
       onAction={onAdd}
       variant="default"
     />
@@ -54,7 +50,6 @@ export function EmptyListEmpty({ onAdd }) {
 }
 
 export function ErrorEmpty({ onRetry }) {
-  const { t } = useTranslation();
   return (
     <EmptyState
       icon={
@@ -63,9 +58,9 @@ export function ErrorEmpty({ onRetry }) {
           <path d="M12 8v4M12 16h.01" />
         </svg>
       }
-      title={t('empty_state.error_title')}
-      description={t('empty_state.error_desc')}
-      action={t('empty_state.retry')}
+      title="Something Went Wrong"
+      description="Failed to load data. Check your connection and try again."
+      action="Retry"
       onAction={onRetry}
       variant="error"
     />
