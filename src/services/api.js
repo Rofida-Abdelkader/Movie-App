@@ -41,5 +41,7 @@ export const getGenres = (language) =>
   api.get("/genre/movie/list", { params: { language: getTMDBLanguage(language) } })
 export const getNowPlaying = (language) => api.get('/movie/now_playing', { params: { language: getTMDBLanguage(language) } });
 export const getPopular = (language) => api.get('/movie/popular', { params: { language: getTMDBLanguage(language) } });
+export const getPopularTV = (language) =>
+  api.get('/tv/popular', { params: { language: getTMDBLanguage(language) } });
 export const getFreeToWatch = (language) => api.get('/movie/upcoming', { params: { language: getTMDBLanguage(language) } });
 export default api

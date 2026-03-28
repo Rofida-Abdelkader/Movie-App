@@ -228,5 +228,41 @@
     "title": "Oops! Page Not Found",
     "desc": "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.",
     "back": "Back to Home"
+  },
+  "landing_page": {
+    "welcome": "Welcome.",
+    "subtitle": "Millions of movies to discover. Explore now.",
+    "search_placeholder": "Search for a movie...",
+    "search": "Search",
+    "trending": "Trending",
+    "latest_trailers": "Latest Trailers",
+    "popular": "Popular",
+    "streaming": "Streaming",
+    "whats_popular": "What's Popular",
+    "on_tv": "On TV",
+    "join_today": "Join Today",
+    "join_desc_1": "Get access to maintain your own",
+    "join_desc_2": "custom personal lists",
+    "join_desc_3": ", track what you've seen and search and filter for",
+    "join_desc_4": "what to watch next",
+    "sign_up": "Sign Up",
+    "join_point_1": "Enjoy TMDB ad free",
+    "join_point_2": "Maintain a personal watchlist",
+    "join_point_3": "Filter by your subscribed streaming services",
+    "join_point_4": "Build custom lists",
+    "leaderboard": "Leaderboard",
+    "all_time_edits": "All Time Edits",
+    "edits_this_week": "Edits This Week",
+    "genre": "Genre",
+    "year": "Year",
+    "sort": "Sort",
+    "most_popular": "Most Popular",
+    "least_popular": "Least Popular",
+    "top_rated": "Top Rated",
+    "lowest_rated": "Lowest Rated",
+    "newest": "Newest",
+    "oldest": "Oldest"
   }
+
+
 }

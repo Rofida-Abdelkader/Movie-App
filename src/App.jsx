@@ -13,6 +13,7 @@ import ToastContainer from './components/ToastContainer';
 import ProtectedRoute from './components/ProtectedRoute';
 import AccountDetails from './pages/AccountDetails';
 import SearchResults from './pages/SearchPage';
+import LandingPage from './pages/LandingPage';
 function App() {
   return (
     <div className="min-h-screen bg-white dark:bg-[#0d1b2a] text-black dark:text-white transition-colors duration-500 flex flex-col">
@@ -22,7 +23,8 @@ function App() {
         <Routes>
           <Route path="/search" element={<SearchResults />} />
           <Route path="/account" element={<ProtectedRoute><AccountDetails /></ProtectedRoute>} />
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/movieslist" element={<Home />} />
           <Route path="/movie/:id" element={<MovieDetails />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

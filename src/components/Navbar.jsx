@@ -35,7 +35,7 @@ export default function Navbar() {
 
           {/* Desktop Links */}
           <ul className="hidden md:flex gap-6 text-black dark:text-white font-semibold text-[15px]">
-            <Link to="/" className="hover:text-[#01b4e4] transition-colors">
+            <Link to="/movieslist" className="hover:text-[#01b4e4] transition-colors">
               {t('navbar.movies')}
             </Link>
             <Link to="/wishlist" className="hover:text-[#01b4e4] transition-colors flex items-center gap-1">
@@ -115,7 +115,7 @@ export default function Navbar() {
           />
 
           <div className="flex flex-col gap-6 text-xl font-bold">
-            <Link to="/" onClick={() => setMenuOpen(false)}>{t('navbar.movies')}</Link>
+            <Link to="/movieslist" onClick={() => setMenuOpen(false)}>{t('navbar.movies')}</Link>
             <Link to="/wishlist" onClick={() => setMenuOpen(false)} className="flex items-center gap-2">
               <span>{t('navbar.wishlist')}</span>
               {wishlistCount > 0 && (

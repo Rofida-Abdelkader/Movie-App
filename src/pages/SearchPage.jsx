@@ -18,25 +18,34 @@ export default function Search(){
     const [totalPages, setTotalPages] = useState(1)
     const page = Number(params.get("page")) || 1
 
-  useEffect(()=>{
+  useEffect(() => {
 
-  const fetchSearch=async()=>{
-    try{
-    setLoading(true)
-    const res = await searchMovies(query,page,language)
-    setTotalPages(res.data.total_pages)
+  const fetchSearch = async () => {
 
-    setMovies(res.data.results)
-    setLoading(false)
-    }catch(error){
+    try {
+
+      if (movies.length === 0) {
+        setLoading(true)
+      }
+
+      const res = await searchMovies(query, page, language)
+
+      setMovies(res.data.results)
+      setTotalPages(res.data.total_pages)
+
+    } catch (error) {
+
       console.error("Search error:", error)
+
+    } finally {
       setLoading(false)
     }
+
   }
 
   fetchSearch()
 
-  },[query,page,language])
+}, [query, page, language, movies.length])
 
   return(
 

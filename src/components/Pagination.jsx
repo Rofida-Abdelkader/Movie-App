@@ -7,9 +7,10 @@ export default function Pagination({ totalPages }) {
   const currentPage = Number(searchParams.get("page")) || 1
 
   const changePage = (page) => {
-    setSearchParams({ page })
-    window.scrollTo({ top: 0, behavior: "smooth" })
-  }
+  const currentQuery = searchParams.get("q") || ""
+  setSearchParams({ q: currentQuery, page })
+  window.scrollTo({ top: 0, behavior: "smooth" })
+}
 
   const pages = []
 
