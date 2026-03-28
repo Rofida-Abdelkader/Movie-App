@@ -11,7 +11,11 @@
     "logout": "Logout",
     "add_item": "Add Item",
     "lang_en": "EN",
-    "lang_ar": "AR"
+    "lang_ar": "AR",
+    "lang_fr": "FR",
+    "lang_it": "IT",
+    "lang_es": "ES",
+    "lang_de": "DE"
   },
   "account": {
     "details_updated": "Account details updated!",

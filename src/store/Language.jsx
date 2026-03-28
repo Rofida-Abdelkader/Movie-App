@@ -7,7 +7,7 @@ const useLanguageStore = create((set) => ({
         set({ language: lang });
         i18n.changeLanguage(lang);
     },
-    languages: ['en', 'ar'],
+    languages: ['en', 'ar', 'fr', 'it', 'es', 'de'],
 }));
 
 export default useLanguageStore;

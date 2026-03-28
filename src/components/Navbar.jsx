@@ -140,7 +140,14 @@ export default function Navbar() {
             )}
           </div>
 
-          <div className="mt-auto">
+          <div className="mt-auto flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-400 capitalize">{t('navbar.lang_' + language)}</span>
+              <LanguageDropdown
+                language={language}
+                setLanguage={setLanguage}
+              />
+            </div>
             <SearchBar />
           </div>
         </div>

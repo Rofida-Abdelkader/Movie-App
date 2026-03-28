@@ -12,18 +12,34 @@ const api = axios.create({
   },
 })
 
-export const getMovieDetails = (id) => api.get(`/movie/${id}`)
-export const getMovieRecommendations = (id) => api.get(`/movie/${id}/recommendations`)
-export const getMovieVideos = (id) => api.get(`/movie/${id}/videos`)
-export const discoverMovies = (params) => api.get('/discover/movie', { params })
+export const getTMDBLanguage = (lang) => {
+  switch (lang) {
+    case 'ar': return 'ar-SA';
+    case 'fr': return 'fr-FR';
+    case 'it': return 'it-IT';
+    case 'es': return 'es-ES';
+    case 'de': return 'de-DE';
+    default: return 'en-US';
+  }
+};
+
+export const getMovieDetails = (id, language) => api.get(`/movie/${id}`, { params: { language: getTMDBLanguage(language) } })
+export const getMovieRecommendations = (id, language) => api.get(`/movie/${id}/recommendations`, { params: { language: getTMDBLanguage(language) } })
+export const getMovieVideos = (id, language) => api.get(`/movie/${id}/videos`, { params: { language: getTMDBLanguage(language) } })
+export const getMovieCredits = (id, language) => api.get(`/movie/${id}/credits`, { params: { language: getTMDBLanguage(language) } })
+export const getMovieReviews = (id, language) => api.get(`/movie/${id}/reviews`, { params: { language: getTMDBLanguage(language) } })
+export const discoverMovies = (params) => {
+  const { language, ...rest } = params;
+  return api.get('/discover/movie', { params: { ...rest, language: getTMDBLanguage(language) } });
+}
 export const searchMovies = (query, page, language) =>
   api.get("/search/movie", {
-    params: { query, page, language }
+    params: { query, page, language: getTMDBLanguage(language) }
   })
 
-export const getGenres = () =>
-  api.get("/genre/movie/list")
-export const getNowPlaying = () => api.get('/movie/now_playing');
-export const getPopular = () => api.get('/movie/popular');
-export const getFreeToWatch = () => api.get('/movie/upcoming');
+export const getGenres = (language) =>
+  api.get("/genre/movie/list", { params: { language: getTMDBLanguage(language) } })
+export const getNowPlaying = (language) => api.get('/movie/now_playing', { params: { language: getTMDBLanguage(language) } });
+export const getPopular = (language) => api.get('/movie/popular', { params: { language: getTMDBLanguage(language) } });
+export const getFreeToWatch = (language) => api.get('/movie/upcoming', { params: { language: getTMDBLanguage(language) } });
 export default api

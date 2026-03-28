@@ -3,7 +3,15 @@ import { useParams } from 'react-router-dom';
 import { FaPlay, FaList, FaHeart, FaBookmark, FaStar, FaLink, FaTimes } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import { DarkModeToggle } from '@/components/DarkModeToggle';
+import {
+  getMovieDetails,
+  getMovieCredits,
+  getMovieReviews,
+  getMovieRecommendations,
+  getMovieVideos
+} from '../services/api';
 import useWishlistStore from '../store/wishlistStore';
+import useAuthStore from '../store/authStore';
 import useToast from '../hooks/useToast';
 
 const MovieDetails = () => {
@@ -11,6 +19,7 @@ const MovieDetails = () => {
   const { t, i18n } = useTranslation();
   const toast = useToast();
   const { toggleWishlist, isWishlisted } = useWishlistStore();
+  const { user } = useAuthStore();
   const [movie, setMovie] = useState(null);
   const [cast, setCast] = useState([]);
   const [reviews, setReviews] = useState(null);
@@ -34,21 +43,19 @@ const MovieDetails = () => {
         setLoading(true);
         window.scrollTo(0, 0);
 
-        const tmdbLang = i18n.language === 'ar' ? 'ar-SA' : 'en-US';
-
         const [movieRes, castRes, reviewRes, recRes, videoRes] = await Promise.all([
-          fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=${tmdbLang}`),
-          fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${API_KEY}&language=${tmdbLang}`),
-          fetch(`https://api.themoviedb.org/3/movie/${id}/reviews?api_key=${API_KEY}&language=${tmdbLang}`),
-          fetch(`https://api.themoviedb.org/3/movie/${id}/recommendations?api_key=${API_KEY}&language=${tmdbLang}`),
-          fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${API_KEY}&language=${tmdbLang}`)
+          getMovieDetails(id, i18n.language),
+          getMovieCredits(id, i18n.language),
+          getMovieReviews(id, i18n.language),
+          getMovieRecommendations(id, i18n.language),
+          getMovieVideos(id, i18n.language)
         ]);
 
-        const movieData = await movieRes.json();
-        const castData = await castRes.json();
-        const reviewData = await reviewRes.json();
-        const recData = await recRes.json();
-        const videoData = await videoRes.json();
+        const movieData = movieRes.data;
+        const castData = castRes.data;
+        const reviewData = reviewRes.data;
+        const recData = recRes.data;
+        const videoData = videoRes.data;
 
         setMovie(movieData);
         setCast(castData.cast?.slice(0, 10) || []);
@@ -124,28 +131,30 @@ const MovieDetails = () => {
                 <div className="w-14 h-14 rounded-full border-4 border-green-500 flex items-center justify-center bg-[#081c22] font-bold text-lg">
                   {Math.round(movie.vote_average * 10)}%
                 </div>
-                <span className="text-sm font-bold w-10 leading-tight">{t('movie_details.user_score')}</span>
+                <span className="text-sm font-bold w-28 leading-tight">{t('movie_details.user_score')}</span>
               </div>
-              <div className="flex gap-3">
-                <button onClick={() => alert(t('movie_details.added_list'))} className="bg-[#032541] p-3 rounded-full hover:scale-110 transition-all"><FaList size={14} /></button>
-                <button onClick={() => alert(t('movie_details.marked_favorite'))} className="bg-[#032541] p-3 rounded-full hover:scale-110 transition-all"><FaHeart size={14} /></button>
-                <button
-                  onClick={() => {
-                    toggleWishlist(movie);
-                    const active = isWishlisted(movie.id);
-                    toast.success(
-                      active
-                        ? `${movie.title} ${t('wishlist.added')}`
-                        : `${movie.title} ${t('wishlist.removed')}`
-                    );
-                  }}
-                  className={`p-3 rounded-full hover:scale-110 transition-all shadow-md ${isWishlisted(movie.id) ? 'bg-[#01b4e4] text-white' : 'bg-[#032541] text-white'
-                    }`}
-                  title={isWishlisted(movie.id) ? t('wishlist.remove') : t('wishlist.add')}
-                >
-                  <FaBookmark size={14} />
-                </button>
-              </div>
+              {user && (
+                <div className="flex gap-3">
+                  <button onClick={() => alert(t('movie_details.added_list'))} className="bg-[#032541] p-3 rounded-full hover:scale-110 transition-all"><FaList size={14} /></button>
+                  <button onClick={() => alert(t('movie_details.marked_favorite'))} className="bg-[#032541] p-3 rounded-full hover:scale-110 transition-all"><FaHeart size={14} /></button>
+                  <button
+                    onClick={() => {
+                      toggleWishlist(movie);
+                      const active = isWishlisted(movie.id);
+                      toast.success(
+                        active
+                          ? `${movie.title} ${t('wishlist.added')}`
+                          : `${movie.title} ${t('wishlist.removed')}`
+                      );
+                    }}
+                    className={`p-3 rounded-full hover:scale-110 transition-all shadow-md ${isWishlisted(movie.id) ? 'bg-[#01b4e4] text-white' : 'bg-[#032541] text-white'
+                      }`}
+                    title={isWishlisted(movie.id) ? t('wishlist.remove') : t('wishlist.add')}
+                  >
+                    <FaBookmark size={14} />
+                  </button>
+                </div>
+              )}
               <button
                 onClick={() => setShowTrailer(true)}
                 className="flex items-center gap-2 font-bold hover:text-[#01b4e4] transition-colors"
@@ -226,7 +235,15 @@ const MovieDetails = () => {
                         )}
                       </div>
                       <p className="text-[14px] text-gray-500 dark:text-gray-400 mt-1">
-                        {t('movie_details.written_by')} <span className="text-black dark:text-white font-semibold">{reviews.author}</span> {t('movie_details.on')} {new Date(reviews.created_at).toLocaleDateString(t('movie_details.english') === 'English' ? 'en-US' : 'ar-EG', { month: 'long', day: 'numeric', year: 'numeric' })}
+                        {t('movie_details.written_by')} <span className="text-black dark:text-white font-semibold">{reviews.author}</span> {t('movie_details.on')} {new Date(reviews.created_at).toLocaleDateString(
+                          i18n.language === 'en' ? 'en-US' :
+                            i18n.language === 'fr' ? 'fr-FR' :
+                              i18n.language === 'it' ? 'it-IT' :
+                                i18n.language === 'es' ? 'es-ES' :
+                                  i18n.language === 'de' ? 'de-DE' :
+                                    'ar-EG',
+                          { month: 'long', day: 'numeric', year: 'numeric' }
+                        )}
                       </p>
                     </div>
                   </div>
