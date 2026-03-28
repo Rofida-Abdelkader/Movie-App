@@ -28,7 +28,7 @@ const ResetPassword = () => {
 
   const handleResetPassword = (e) => {
     e.preventDefault();
-    if (newPassword.length < 4) {
+    if (newPassword.length < 6) {
       toast.error(t('reset_pass.pass_min'));
       return;
     }
@@ -91,7 +91,7 @@ const ResetPassword = () => {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
-              minLength={4}
+              minLength={6}
               className="w-full border border-gray-300 dark:border-gray-800 bg-white dark:bg-[#0d141e] rounded-[4px] p-2 outline-none focus:border-[#01b4e4] rtl:text-right text-black dark:text-white transition-all" 
             />
           </div>
