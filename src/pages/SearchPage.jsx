@@ -55,9 +55,12 @@ export default function Search(){
           <MovieCard key={movie.id} movie={movie} />
         ))
       ) : (
+        <>
         <p className="col-span-full text-center text-muted-foreground">
           No movies found
         </p>
+        <SkeletonCards />
+        </>
       )}
 
     </div>

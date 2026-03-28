@@ -75,10 +75,12 @@ export default function Home() {
                             movie={movie}
                         />
                     ))
-                ) : (
+                ) : (<>
                     <div className="col-span-full py-20 text-center">
                         <p className="text-xl font-bold text-gray-500">{t('empty_state.no_results_title')}</p>
                     </div>
+                    <SkeletonCards />
+                    </>
                 )}
             </div>
 
