@@ -1,22 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaPlay, FaList, FaHeart, FaBookmark, FaStar, FaLink, FaTimes } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
+import { DarkModeToggle } from '@/components/DarkModeToggle';
+import useWishlistStore from '../store/wishlistStore';
+import useToast from '../hooks/useToast';
 
 const MovieDetails = () => {
   const { id } = useParams();
+  const { t, i18n } = useTranslation();
+  const toast = useToast();
+  const { toggleWishlist, isWishlisted } = useWishlistStore();
   const [movie, setMovie] = useState(null);
   const [cast, setCast] = useState([]);
   const [reviews, setReviews] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showTrailer, setShowTrailer] = useState(false);
+  const [activeSocialTab, setActiveSocialTab] = useState('reviews');
 
-  // --- حالات التشغيل الجديدة (Interactive States) ---
-  const [showTrailer, setShowTrailer] = useState(false); // للمودال الخاص بالتريلر
-  const [activeSocialTab, setActiveSocialTab] = useState('reviews'); // للتحكم في قسم Social
-  const [activeMediaTab, setActiveMediaTab] = useState('popular'); // للتحكم في قسم Media
+  // Derive RTL from i18n language so it reacts to language switches
+  const isRTL = i18n.language === 'ar';
 
-  const API_KEY = import.meta.env.VITE_API_KEY;
+  const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
   const IMAGE_BASE_URL = "https://image.tmdb.org/t/p";
 
   useEffect(() => {
@@ -27,12 +34,14 @@ const MovieDetails = () => {
         setLoading(true);
         window.scrollTo(0, 0);
 
+        const tmdbLang = i18n.language === 'ar' ? 'ar-SA' : 'en-US';
+
         const [movieRes, castRes, reviewRes, recRes, videoRes] = await Promise.all([
-          fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}`),
-          fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${API_KEY}`),
-          fetch(`https://api.themoviedb.org/3/movie/${id}/reviews?api_key=${API_KEY}`),
-          fetch(`https://api.themoviedb.org/3/movie/${id}/recommendations?api_key=${API_KEY}`),
-          fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${API_KEY}`)
+          fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=${tmdbLang}`),
+          fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${API_KEY}&language=${tmdbLang}`),
+          fetch(`https://api.themoviedb.org/3/movie/${id}/reviews?api_key=${API_KEY}&language=${tmdbLang}`),
+          fetch(`https://api.themoviedb.org/3/movie/${id}/recommendations?api_key=${API_KEY}&language=${tmdbLang}`),
+          fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${API_KEY}&language=${tmdbLang}`)
         ]);
 
         const movieData = await movieRes.json();
@@ -45,7 +54,7 @@ const MovieDetails = () => {
         setCast(castData.cast?.slice(0, 10) || []);
         setReviews(reviewData.results?.[0] || null);
         setRecommendations(recData.results?.slice(0, 6) || []);
-        
+
         const trailers = videoData.results?.filter(v => v.type === "Trailer") || [];
         setVideos(trailers);
 
@@ -58,24 +67,29 @@ const MovieDetails = () => {
     };
 
     fetchData();
-  }, [id, API_KEY]);
+  }, [id, API_KEY, i18n.language]);
 
-  if (loading) return <div className="h-screen flex items-center justify-center bg-[#032541] text-white">Loading...</div>;
-  if (!movie) return <div className="h-screen flex items-center justify-center">Movie not found</div>;
+  if (loading) return <div className="h-screen flex items-center justify-center bg-[#032541] text-white">{t('movie_details.loading')}</div>;
+  if (!movie) return <div className="h-screen flex items-center justify-center">{t('movie_details.not_found')}</div>;
 
   return (
-    <div className="font-sans dark:bg-white text-black relative">
-      
+    // CHANGED: added dir + lang so Tailwind's rtl: variants work, and dark: variants work via the dark class on <html>
+    <div
+      dir={isRTL ? 'rtl' : 'ltr'}
+      lang={isRTL ? 'ar' : 'en'}
+      className="font-sans bg-white dark:bg-[#0a192f] text-black dark:text-white transition-colors duration-300 relative rtl:text-right"
+    >
+
       {/* --- 0. Trailer Video Modal --- */}
       {showTrailer && videos.length > 0 && (
         <div className="fixed inset-0 z-[1000] bg-black/90 flex items-center justify-center p-4">
-          <button 
+          <button
             onClick={() => setShowTrailer(false)}
-            className="absolute top-10 right-10 text-white text-3xl hover:text-[#01b4e4] transition-colors"
+            className="absolute top-10 right-10 rtl:left-10 rtl:right-auto text-white text-3xl hover:text-[#01b4e4] transition-colors"
           >
             <FaTimes />
           </button>
-          <div className="w-full max-w-5xl aspect-video bg-black shadow-2xl">
+          <div className="w-full max-w-5xl aspect-video bg-black shadow-2xl ">
             <iframe
               className="w-full h-full"
               src={`https://www.youtube.com/embed/${videos[0].key}?autoplay=1`}
@@ -93,10 +107,10 @@ const MovieDetails = () => {
         style={{ backgroundImage: `linear-gradient(to right, rgba(3, 37, 65, 1) 150px, rgba(3, 37, 65, 0.8) 100%), url(${IMAGE_BASE_URL}/original${movie.backdrop_path})` }}
       >
         <div className="max-w-[1300px] mx-auto px-10 py-10 flex flex-col md:flex-row gap-10">
-          <img src={`${IMAGE_BASE_URL}/w500${movie.poster_path}`} className="w-[300px] rounded-xl shadow-2xl" alt={movie.title} />
+          <img src={`${IMAGE_BASE_URL}/w500${movie.poster_path}`} className="w-[300px] rounded-xl shadow-2xl mx-auto md:mx-0" alt={isRTL ? movie.title : movie.title} />
           <div className="flex flex-col justify-center">
-            <h1 className="text-4xl font-bold">{movie.title} <span className="font-normal opacity-70">({movie.release_date?.split('-')[0]})</span></h1>
-            <div className="flex items-center gap-3 mt-2 mb-6 text-sm">
+            <h1 className="text-4xl font-bold">{movie.title} <span className="font-normal opacity-70 rtl:hidden dark:text-white">({movie.release_date?.split('-')[0]})</span></h1>
+            <div className="flex items-center gap-3 mt-2 mb-6 text-sm flex-wrap">
               <span className="border px-1 rounded uppercase font-bold text-[12px]">PG-13</span>
               <span>{movie.release_date}</span>
               <span>•</span>
@@ -105,48 +119,63 @@ const MovieDetails = () => {
               <span>{Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m</span>
             </div>
 
-            <div className="flex items-center gap-6 mb-8">
+            <div className="flex items-center gap-6 mb-8 flex-wrap">
               <div className="flex items-center gap-2">
                 <div className="w-14 h-14 rounded-full border-4 border-green-500 flex items-center justify-center bg-[#081c22] font-bold text-lg">
                   {Math.round(movie.vote_average * 10)}%
                 </div>
-                <span className="text-sm font-bold w-10 leading-tight">User Score</span>
+                <span className="text-sm font-bold w-10 leading-tight">{t('movie_details.user_score')}</span>
               </div>
               <div className="flex gap-3">
-                <button onClick={() => alert("Added to List")} className="bg-[#032541] p-3 rounded-full hover:scale-110 transition-all"><FaList size={14} /></button>
-                <button onClick={() => alert("Marked as Favorite")} className="bg-[#032541] p-3 rounded-full hover:scale-110 transition-all"><FaHeart size={14} /></button>
-                <button onClick={() => alert("Added to Watchlist")} className="bg-[#032541] p-3 rounded-full hover:scale-110 transition-all"><FaBookmark size={14} /></button>
+                <button onClick={() => alert(t('movie_details.added_list'))} className="bg-[#032541] p-3 rounded-full hover:scale-110 transition-all"><FaList size={14} /></button>
+                <button onClick={() => alert(t('movie_details.marked_favorite'))} className="bg-[#032541] p-3 rounded-full hover:scale-110 transition-all"><FaHeart size={14} /></button>
+                <button
+                  onClick={() => {
+                    toggleWishlist(movie);
+                    const active = isWishlisted(movie.id);
+                    toast.success(
+                      active
+                        ? `${movie.title} ${t('wishlist.added')}`
+                        : `${movie.title} ${t('wishlist.removed')}`
+                    );
+                  }}
+                  className={`p-3 rounded-full hover:scale-110 transition-all shadow-md ${isWishlisted(movie.id) ? 'bg-[#01b4e4] text-white' : 'bg-[#032541] text-white'
+                    }`}
+                  title={isWishlisted(movie.id) ? t('wishlist.remove') : t('wishlist.add')}
+                >
+                  <FaBookmark size={14} />
+                </button>
               </div>
-              <button 
+              <button
                 onClick={() => setShowTrailer(true)}
                 className="flex items-center gap-2 font-bold hover:text-[#01b4e4] transition-colors"
               >
-                <FaPlay /> Play Trailer
+                <FaPlay className="rtl:rotate-180" /> {t('movie_details.play_trailer')}
               </button>
             </div>
-            <p className="italic opacity-80 text-lg mb-4">{movie.tagline}</p>
-            <h3 className="text-xl font-bold mb-2">Overview</h3>
-            <p className="leading-relaxed max-w-3xl">{movie.overview}</p>
+            <p className="italic opacity-80 text-lg mb-4 text-left rtl:text-right">{t(movie.tagline)}</p>
+            <h3 className="text-xl font-bold mb-2 text-left rtl:text-right dark:text-white">{t('movie_details.overview')}</h3>
+            <p className="leading-relaxed max-w-3xl text-left rtl:text-right">{movie.overview}</p>
           </div>
         </div>
       </div>
 
       {/* 2. Main Content Grid (Two Columns) */}
-      <div className="max-w-[1300px] mx-auto px-10 py-10 flex flex-col lg:flex-row gap-12">
+      <div className="max-w-[1300px] mx-auto px-10 py-10 flex flex-col lg:flex-row gap-12 text-left rtl:text-right">
 
         {/* Left Column */}
         <div className="lg:w-3/4 overflow-hidden">
-          
+
           {/* Top Billed Cast */}
           <section className="mb-10">
-            <h2 className="text-2xl font-bold mb-6 text-black">Top Billed Cast</h2>
+            <h2 className="text-2xl font-bold mb-6 text-black dark:text-white">{t('movie_details.top_cast')}</h2>
             <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
               {cast.map(person => (
-                <div key={person.id} className="min-w-[140px] border rounded-xl shadow-sm bg-white overflow-hidden hover:shadow-md transition-shadow">
+                <div key={person.id} className="min-w-[140px] border dark:border-gray-800 rounded-xl shadow-sm bg-white dark:bg-[#0d253f] overflow-hidden hover:shadow-md transition-shadow">
                   <img src={person.profile_path ? `${IMAGE_BASE_URL}/w185${person.profile_path}` : 'https://via.placeholder.com/185x278'} className="w-full h-[175px] object-cover" alt={person.name} />
                   <div className="p-3">
-                    <p className="font-bold text-[14px]">{person.name}</p>
-                    <p className="text-gray-500 text-[12px]">{person.character}</p>
+                    <p className="font-bold text-[14px] text-black dark:text-white">{person.name}</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-[12px]">{person.character}</p>
                   </div>
                 </div>
               ))}
@@ -156,24 +185,24 @@ const MovieDetails = () => {
           {/* Social / Review Section */}
           <section className="mb-10 border-t pt-8 font-sans">
             <div className="flex items-center gap-8 mb-6">
-              <h2 className="text-2xl font-bold text-black">Social</h2>
-              <div 
-                className={`flex gap-6 text-[17px] font-semibold cursor-pointer pb-2 ${activeSocialTab === 'reviews' ? 'border-b-[4px] border-black text-black' : 'text-gray-500'}`}
+              <h2 className="text-2xl font-bold text-black dark:text-white">{t('movie_details.social')}</h2>
+              <div
+                className={`flex gap-6 text-[17px] font-semibold cursor-pointer pb-2 transition-all ${activeSocialTab === 'reviews' ? 'border-b-[4px] border-black dark:border-[#01b4e4] text-black dark:text-[#01b4e4]' : 'text-gray-500 dark:text-gray-400'}`}
                 onClick={() => setActiveSocialTab('reviews')}
               >
-                <span>Reviews <span className="text-gray-400 font-normal ml-1">{reviews ? '1' : '0'}</span></span>
+                <span>{t('movie_details.reviews')} <span className="text-gray-400 font-normal ml-1">{reviews ? '1' : '0'}</span></span>
               </div>
-              <div 
-                className={`text-[17px] font-semibold cursor-pointer pb-2 hover:text-black transition-colors ${activeSocialTab === 'discussions' ? 'border-b-[4px] border-black text-black' : 'text-gray-500'}`}
+              <div
+                className={`text-[17px] font-semibold cursor-pointer pb-2 transition-all hover:text-black dark:hover:text-white ${activeSocialTab === 'discussions' ? 'border-b-[4px] border-black dark:border-[#01b4e4] text-black dark:text-[#01b4e4]' : 'text-gray-500 dark:text-gray-400'}`}
                 onClick={() => setActiveSocialTab('discussions')}
               >
-                Discussions <span className="text-gray-400 font-normal ml-1">0</span>
+                {t('movie_details.discussions')} <span className="text-gray-400 font-normal ml-1">0</span>
               </div>
             </div>
 
             {activeSocialTab === 'reviews' ? (
               reviews ? (
-                <div className="border border-gray-200 rounded-xl shadow-md p-6 bg-white">
+                <div className="border border-gray-200 dark:border-gray-800 rounded-xl shadow-md p-6 bg-white dark:bg-[#0d253f]">
                   <div className="flex items-center gap-4 mb-5">
                     <div className="w-12 h-12 bg-[#01b4e4] rounded-full flex items-center justify-center text-white font-bold text-xl uppercase shadow-sm overflow-hidden">
                       {reviews.author_details?.avatar_path ? (
@@ -187,45 +216,45 @@ const MovieDetails = () => {
 
                     <div className="flex flex-col">
                       <div className="flex items-center gap-3 flex-wrap">
-                        <h3 className="font-bold text-[1.2rem] text-black hover:text-gray-700 cursor-pointer">
-                          A review by {reviews.author}
+                        <h3 className="font-bold text-[1.2rem] text-black dark:text-white hover:text-gray-700 dark:hover:text-[#01b4e4] transition-colors cursor-pointer">
+                          {t('movie_details.review_by')} {reviews.author}
                         </h3>
                         {reviews.author_details?.rating && (
-                          <div className="bg-[#032541] text-white text-[11px] px-2 py-0.5 rounded-[5px] flex items-center gap-1 font-bold">
+                          <div className="bg-[#032541] dark:bg-[#01b4e4] text-white text-[11px] px-2 py-0.5 rounded-[5px] flex items-center gap-1 font-bold rtl:flex-row-reverse">
                             <FaStar size={9} /> {reviews.author_details.rating * 10}%
                           </div>
                         )}
                       </div>
-                      <p className="text-[14px] text-gray-500 mt-1">
-                        Written by <span className="text-black font-semibold">{reviews.author}</span> on {new Date(reviews.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                      <p className="text-[14px] text-gray-500 dark:text-gray-400 mt-1">
+                        {t('movie_details.written_by')} <span className="text-black dark:text-white font-semibold">{reviews.author}</span> {t('movie_details.on')} {new Date(reviews.created_at).toLocaleDateString(t('movie_details.english') === 'English' ? 'en-US' : 'ar-EG', { month: 'long', day: 'numeric', year: 'numeric' })}
                       </p>
                     </div>
                   </div>
 
-                  <div className="text-[15px] leading-relaxed text-gray-800 px-1">
+                  <div className="text-[15px] leading-relaxed text-gray-800 dark:text-gray-200 px-1">
                     <div className="line-clamp-4 italic">{reviews.content}</div>
-                    <button className="text-black underline font-bold mt-3 hover:text-gray-600 block transition-colors">read the rest</button>
+                    <button className="text-black dark:text-[#01b4e4] underline font-bold mt-3 hover:text-gray-600 dark:hover:text-white block transition-colors">{t('movie_details.read_rest')}</button>
                   </div>
                 </div>
               ) : (
-                <div className="p-10 bg-gray-50 rounded-xl text-center text-gray-400 italic border-2 border-dashed">No reviews have been added yet.</div>
+                <div className="p-10 bg-gray-50 dark:bg-[#0d141e] rounded-xl text-center text-gray-400 italic border-2 border-dashed border-gray-200 dark:border-gray-800">{t('movie_details.no_reviews')}</div>
               )
             ) : (
-              <div className="p-10 bg-gray-50 rounded-xl text-center text-gray-400 italic border-2 border-dashed">No discussions yet.</div>
+              <div className="p-10 bg-gray-50 dark:bg-[#0d141e] rounded-xl text-center text-gray-400 italic border-2 border-dashed border-gray-200 dark:border-gray-800">{t('movie_details.no_discussions')}</div>
             )}
           </section>
 
           {/* Media Section */}
           <section className="mb-10 border-t pt-8 font-sans">
             <div className="flex items-center gap-8 mb-6">
-              <h2 className="text-2xl font-bold text-black">Media</h2>
-              <div className="flex gap-6 text-[17px] font-semibold border-b-[4px] border-black pb-2 cursor-pointer">
-                <span>Most Popular</span>
+              <h2 className="text-2xl font-bold text-black dark:text-white">{t('movie_details.media')}</h2>
+              <div className="flex gap-6 text-[17px] font-semibold border-b-[4px] border-black dark:border-[#01b4e4] text-black dark:text-[#01b4e4] pb-2 cursor-pointer transition-all">
+                <span>{t('movie_details.most_popular')}</span>
               </div>
-              <div className="flex gap-6 text-[17px] font-semibold text-gray-500">
-                <span className="hover:text-black cursor-pointer transition-colors">Videos <span className="text-gray-400 font-normal ml-1">{videos.length}</span></span>
-                <span className="hover:text-black cursor-pointer transition-colors">Backdrops <span className="text-gray-400 font-normal ml-1">20</span></span>
-                <span className="hover:text-black cursor-pointer transition-colors">Posters <span className="text-gray-400 font-normal ml-1">10</span></span>
+              <div className="flex gap-6 text-[17px] font-semibold text-gray-500 dark:text-gray-400">
+                <span className="hover:text-black dark:hover:text-white cursor-pointer transition-colors">{t('movie_details.videos')} <span className="text-gray-400 font-normal ml-1">{videos.length}</span></span>
+                <span className="hover:text-black dark:hover:text-white cursor-pointer transition-colors">{t('movie_details.backdrops')} <span className="text-gray-400 font-normal ml-1">20</span></span>
+                <span className="hover:text-black dark:hover:text-white cursor-pointer transition-colors">{t('movie_details.posters')} <span className="text-gray-400 font-normal ml-1">10</span></span>
               </div>
             </div>
 
@@ -240,7 +269,7 @@ const MovieDetails = () => {
                     />
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-16 h-16 bg-black/60 rounded-full flex items-center justify-center group-hover:bg-[#01b4e4] transition-all duration-300">
-                        <FaPlay className="text-white ml-1" size={25} />
+                        <FaPlay className="text-white ml-1 rtl:rotate-180" size={25} />
                       </div>
                     </div>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
@@ -249,21 +278,21 @@ const MovieDetails = () => {
                   </div>
                 ))
               ) : (
-                <div className="w-full h-[200px] bg-gray-100 rounded-xl flex items-center justify-center text-gray-400 italic">No videos available.</div>
+                <div className="w-full h-[200px] bg-gray-100 dark:bg-[#081c22] rounded-xl flex items-center justify-center text-gray-400 dark:text-gray-500 italic border border-gray-200 dark:border-gray-800">{t('movie_details.no_videos')}</div>
               )}
             </div>
           </section>
 
           {/* Recommendations */}
           <section className="border-t pt-8">
-            <h2 className="text-2xl font-bold mb-6 text-black">Recommendations</h2>
+            <h2 className="text-2xl font-bold mb-6 text-black dark:text-white">{t('movie_details.recommendations')}</h2>
             <div className="flex gap-4 overflow-x-auto pb-6 scrollbar-hide">
               {recommendations.map(item => (
                 <div key={item.id} className="min-w-[250px] group cursor-pointer hover:opacity-80 transition-opacity">
-                  <img src={item.backdrop_path ? `${IMAGE_BASE_URL}/w500${item.backdrop_path}` : 'https://via.placeholder.com/500x281'} className="rounded-xl mb-2" alt={item.title} />
+                  <img src={item.backdrop_path ? `${IMAGE_BASE_URL}/w500${item.backdrop_path}` : 'https://via.placeholder.com/500x281'} className="rounded-xl mb-2 shadow-sm dark:shadow-black" alt={item.title} />
                   <div className="flex justify-between text-sm">
-                    <p className="truncate font-medium w-[80%] text-black">{item.title}</p>
-                    <span className="font-bold text-green-600">{Math.round(item.vote_average * 10)}%</span>
+                    <p className="truncate font-medium w-[80%] text-black dark:text-white text-left rtl:text-right">{item.title}</p>
+                    <span className="font-bold text-green-600 rtl:mr-auto rtl:ml-0">{Math.round(item.vote_average * 10)}%</span>
                   </div>
                 </div>
               ))}
@@ -272,28 +301,27 @@ const MovieDetails = () => {
         </div>
 
         {/* Right Column: Sidebar */}
-        <div className="lg:w-1/4 flex flex-col gap-6 text-black">
+        <div className="lg:w-1/4 flex flex-col gap-6 text-black dark:text-white text-left rtl:text-right">
           <div className="flex gap-6 mb-4 text-2xl">
-             {/* جعل الأيقونة تفتح رابط IMDb الرسمي */}
             <a href={`https://www.imdb.com/title/${movie.imdb_id}`} target="_blank" rel="noreferrer">
               <FaLink className="cursor-pointer hover:text-[#01b4e4] transition-colors" />
             </a>
           </div>
           <div>
-            <p className="font-bold">Status</p>
-            <p className="text-gray-600">{movie.status}</p>
+            <p className="font-bold">{t('movie_details.status')}</p>
+            <p className="text-gray-600 dark:text-gray-400">{movie.status}</p>
           </div>
           <div>
-            <p className="font-bold">Original Language</p>
-            <p className="text-gray-600">English</p>
+            <p className="font-bold">{t('movie_details.original_language')}</p>
+            <p className="text-gray-600 dark:text-gray-400">{t('movie_details.english')}</p>
           </div>
           <div>
-            <p className="font-bold">Budget</p>
-            <p className="text-gray-600">${movie.budget?.toLocaleString() || '-'}</p>
+            <p className="font-bold">{t('movie_details.budget')}</p>
+            <p className="text-gray-600 dark:text-gray-400">${movie.budget?.toLocaleString() || '-'}</p>
           </div>
           <div>
-            <p className="font-bold">Revenue</p>
-            <p className="text-gray-600">${movie.revenue?.toLocaleString() || '-'}</p>
+            <p className="font-bold">{t('movie_details.revenue')}</p>
+            <p className="text-gray-600 dark:text-gray-400">${movie.revenue?.toLocaleString() || '-'}</p>
           </div>
         </div>
 

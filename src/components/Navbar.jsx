@@ -1,117 +1,150 @@
 import { Link } from "react-router-dom"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { FaBell, FaBars, FaTimes } from "react-icons/fa"
 import SearchBar from "./SearchBar"
-import {DarkModeToggle} from "./DarkModeToggle"
+import { DarkModeToggle } from "./DarkModeToggle"
 import LanguageDropdown from "./LanguageDropdown"
 import useLanguageStore from "@/store/Language"
 import useAuthStore from "@/store/authStore"
+import useWishlistStore from "@/store/wishlistStore"
+import { useTranslation } from "react-i18next"
 
-export default function Navbar(){
+export default function Navbar() {
+  const { t, i18n } = useTranslation();
   const language = useLanguageStore((state) => state.language);
   const setLanguage = useLanguageStore((state) => state.setLanguage);
-  const [menuOpen,setMenuOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const { user, logout } = useAuthStore();
+  const wishlistCount = useWishlistStore((state) => state.wishlist.length);
 
- return(
+  useEffect(() => {
+    const dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.dir = dir;
+    document.documentElement.lang = i18n.language;
+  }, [i18n.language]);
 
- <nav className="bg-gray-400 h-16 dark:bg-[#0d1b2a] flex items-center sticky top-0 z-50">
+  return (
+    <nav className="bg-white/80 backdrop-blur-md h-16 dark:bg-[#0d1b2a]/95 border-b border-gray-200/50 dark:border-gray-800 flex items-center sticky top-0 z-50 transition-all duration-300 shadow-sm">
+      <div className="mx-auto w-full px-6 flex justify-between items-center group">
 
-  <div className="mx-auto w-full px-6 flex justify-between items-center">
+        <div className="flex items-center gap-8">
+          {/* Logo */}
+          <Link to="/" className="font-black text-[#01b4e4] text-2xl tracking-tighter hover:scale-105 transition-transform">
+            TMDB
+          </Link>
 
-   {/* Logo */}
-   <Link to="/" className="font-black text-[#01b4e4] text-2xl">
-    TMDB
-   </Link>
+          {/* Desktop Links */}
+          <ul className="hidden md:flex gap-6 text-black dark:text-white font-semibold text-[15px]">
+            <Link to="/" className="hover:text-[#01b4e4] transition-colors">
+              {t('navbar.movies')}
+            </Link>
+            <Link to="/wishlist" className="hover:text-[#01b4e4] transition-colors flex items-center gap-1">
+              <span>{t('navbar.wishlist')}</span>
+              {wishlistCount > 0 && (
+                <span className="bg-[#01b4e4] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center shadow-sm animate-in zoom-in duration-300">
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
+          </ul>
+        </div>
 
-   {/* Desktop Links */}
-   <ul className="hidden md:flex gap-6 text-black dark:text-white font-semibold">
-    <Link to="/" className="hover:text-[#01b4e4]">
-     Movies
-    </Link>
-    <Link to="/wishlist" className="hover:text-[#01b4e4]">
-     Wishlist
-    </Link>
-   </ul>
+        {/* Desktop Right Side */}
+        <div className="hidden md:flex items-center gap-6">
+          <SearchBar />
 
-   {/* Desktop Right Side */}
-   <div className="hidden md:flex items-center gap-6">
+          <LanguageDropdown
+            language={language}
+            setLanguage={setLanguage}
+          />
 
-    <SearchBar/>
-    <LanguageDropdown
-        language={language}
-        setLanguage={setLanguage}
-      />
-     {/* Right Side: Auth & Tools */}
-        <div className="flex items-center gap-6 text-white font-semibold text-[15px]">
-          {/* روابط الـ Auth */}
-          {!user ? (
-            <>
-              <Link to="/login" className="hover:text-[#01b4e4] transition-colors">
-                Login
-              </Link>
-              <Link to="/register" className="hover:text-[#01b4e4] transition-colors">
-                Join TMDB
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link to="/account" className="hover:text-[#01b4e4] transition-colors">
-                Account
-              </Link>
-              <button
-                onClick={logout}
-                className="hover:text-[#01b4e4] transition-colors cursor-pointer"
-              >
-                Logout
-              </button>
-            </>
-          )}
+          <div className="flex items-center gap-6 text-black dark:text-white font-semibold text-[15px]">
+            {!user ? (
+              <>
+                <Link to="/login" className="hover:text-[#01b4e4] transition-colors">
+                  {t('navbar.login')}
+                </Link>
+                <Link to="/register" className="hover:text-[#01b4e4] transition-colors">
+                  {t('navbar.join_tmdb')}
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link to="/account" className="hover:text-[#01b4e4] transition-colors">
+                  {t('navbar.account')}
+                </Link>
+                <button
+                  onClick={logout}
+                  className="hover:text-[#01b4e4] transition-colors cursor-pointer"
+                >
+                  {t('navbar.logout')}
+                </button>
+              </>
+            )}
           </div>
 
-    <DarkModeToggle/>
+          <div className="flex items-center gap-4 border-l dark:border-gray-700 pl-6">
+            <DarkModeToggle />
+            <div className="relative group cursor-pointer">
+              <FaBell className="hover:text-[#01b4e4] transition-colors" />
+              <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#d40242] rounded-full"></span>
+            </div>
+            {user && (
+              <div className="w-8 h-8 rounded-full bg-[#c0392b] flex items-center justify-center text-white text-sm font-bold shadow-md cursor-pointer hover:ring-2 hover:ring-[#01b4e4] transition-all">
+                {user?.username?.charAt(0).toUpperCase()}
+              </div>
+            )}
+          </div>
+        </div>
 
-    <FaBell className="cursor-pointer"/>
-   </div>
+        {/* Mobile Menu Button */}
+        <div className="md:hidden flex items-center gap-4 text-black dark:text-white">
+          <FaBars
+            className="text-xl cursor-pointer hover:text-[#01b4e4] transition-colors"
+            onClick={() => setMenuOpen(true)}
+          />
+        </div>
+      </div>
 
-   {/* Mobile Menu Button */}
-   <div className="md:hidden flex items-center gap-4">
+      {/* Mobile Menu */}
+      {menuOpen && (
+        <div className="fixed inset-0 w-full h-screen bg-black/95 text-white flex flex-col p-8 gap-6 z-[100] animate-in fade-in slide-in-from-right-10 duration-300">
+          <FaTimes
+            className="text-2xl self-end cursor-pointer hover:text-[#01b4e4] transition-colors"
+            onClick={() => setMenuOpen(false)}
+          />
 
-    <FaBars
-     className="text-xl cursor-pointer"
-     onClick={()=>setMenuOpen(true)}
-    />
+          <div className="flex flex-col gap-6 text-xl font-bold">
+            <Link to="/" onClick={() => setMenuOpen(false)}>{t('navbar.movies')}</Link>
+            <Link to="/wishlist" onClick={() => setMenuOpen(false)} className="flex items-center gap-2">
+              <span>{t('navbar.wishlist')}</span>
+              {wishlistCount > 0 && (
+                <span className="bg-[#01b4e4] text-white text-xs font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
 
-   </div>
+            <div className="h-px bg-white/10 my-2" />
 
-  </div>
+            {!user ? (
+              <>
+                <Link to="/login" onClick={() => setMenuOpen(false)}>{t('navbar.login')}</Link>
+                <Link to="/register" onClick={() => setMenuOpen(false)}>{t('navbar.join_tmdb')}</Link>
+              </>
+            ) : (
+              <>
+                <Link to="/account" onClick={() => setMenuOpen(false)}>{t('navbar.account')}</Link>
+                <button onClick={() => { logout(); setMenuOpen(false); }} className="text-left">{t('navbar.logout')}</button>
+              </>
+            )}
+          </div>
 
-  {/* Mobile Menu */}
-       
-  {menuOpen && (
-
-   <div className="absolute top-0 left-0 w-full h-screen bg-black/90 text-white flex flex-col p-8 gap-6">
-
-    <FaTimes
-     className="text-2xl self-end cursor-pointer"
-     onClick={()=>setMenuOpen(false)}
-    />
-
-    <Link to="/" onClick={()=>setMenuOpen(false)}>Home</Link>
-    <Link to="/movies" onClick={()=>setMenuOpen(false)}>Movies</Link>
-    <Link to="/tv" onClick={()=>setMenuOpen(false)}>TV Shows</Link>
-    <Link to="/people" onClick={()=>setMenuOpen(false)}>People</Link>
-    <Link to="/wishlist" onClick={()=>setMenuOpen(false)}>Wishlist</Link>
-
-    <SearchBar/>
-
-    <Link to="/login">Login</Link>
-    <Link to="/register">Register</Link>
-
-   </div>
-
-  )}
-
- </nav>
- )
+          <div className="mt-auto">
+            <SearchBar />
+          </div>
+        </div>
+      )}
+    </nav>
+  )
 }
