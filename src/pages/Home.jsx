@@ -28,14 +28,14 @@ export default function Home() {
     useEffect(() => {
         const fetchGenres = async () => {
             try {
-                const res = await getGenres()
+                const res = await getGenres(language)
                 setGenres(res.data.genres)
             } catch (error) {
                 console.error("Failed to fetch genres", error)
             }
         }
         fetchGenres()
-    }, [])
+    }, [language])
 
     useEffect(() => {
         const fetchMovies = async () => {
@@ -43,7 +43,7 @@ export default function Home() {
                 setLoading(true)
                 const movieList = await discoverMovies({
                     page: page,
-                    language: language === 'ar' ? 'ar-SA' : 'en-US', // Adjust key for TMDB API
+                    language: language,
                     ...filters
                 })
                 setMovies(movieList.data.results)

@@ -11,7 +11,11 @@
     "logout": "تسجيل الخروج",
     "add_item": "إضافة عنصر",
     "lang_en": "EN",
-    "lang_ar": "AR"
+    "lang_ar": "AR",
+    "lang_fr": "FR",
+    "lang_it": "IT",
+    "lang_es": "ES",
+    "lang_de": "DE"
   },
   "account": {
     "details_updated": "تم تحديث تفاصيل الحساب!",

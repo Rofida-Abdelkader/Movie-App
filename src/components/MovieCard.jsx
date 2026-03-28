@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 const MovieCard = ({ movie }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   
   // Defensive programming: check if movie exists
   if (!movie) return null;
@@ -17,11 +17,19 @@ const MovieCard = ({ movie }) => {
   };
 
   const releaseDate = movie.release_date 
-    ? new Date(movie.release_date).toLocaleDateString(t('movie_details.english') === 'English' ? 'en-US' : 'ar-EG', { 
-        month: 'short', 
-        day: 'numeric', 
-        year: 'numeric' 
-      })
+    ? new Date(movie.release_date).toLocaleDateString(
+        i18n.language === 'en' ? 'en-US' : 
+        i18n.language === 'fr' ? 'fr-FR' : 
+        i18n.language === 'it' ? 'it-IT' : 
+        i18n.language === 'es' ? 'es-ES' : 
+        i18n.language === 'de' ? 'de-DE' : 
+        'ar-EG',
+        { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric' 
+        }
+      )
     : t('movie_card.no_date');
 
   const posterUrl = movie.poster_path 

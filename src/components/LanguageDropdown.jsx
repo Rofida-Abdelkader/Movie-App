@@ -18,7 +18,12 @@ export default function LanguageDropdown({ language, setLanguage }) {
       <SelectContent className="bg-white dark:bg-[#0d1b2a] border-gray-200 dark:border-gray-800">
         {languages.map((lang) => (
           <SelectItem key={lang} value={lang} className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
-            {lang === 'en' ? 'English' : 'العربية'}
+            {lang === 'en' ? 'English' : 
+             lang === 'ar' ? 'العربية' : 
+             lang === 'fr' ? 'Français' : 
+             lang === 'it' ? 'Italiano' : 
+             lang === 'es' ? 'Español' : 
+             'Deutsch'}
           </SelectItem>
         ))}
       </SelectContent>
