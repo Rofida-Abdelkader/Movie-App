@@ -47,7 +47,7 @@ const AccountDetails = () => {
 
   const handleSavePassword = async (e) => {
     e.preventDefault();
-    if (passwordForm.newPassword.length < 4) {
+    if (passwordForm.newPassword.length < 6) {
       toast.error(t('account.pass_min_char'));
       return;
     }
@@ -211,7 +211,7 @@ const AccountDetails = () => {
                   value={passwordForm.newPassword}
                   onChange={handlePasswordChange}
                   required
-                  minLength={4}
+                  minLength={6}
                   className={inputCls}
                 />
               </div>

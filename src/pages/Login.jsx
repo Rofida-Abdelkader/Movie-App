@@ -17,20 +17,9 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const savedUser = JSON.parse(localStorage.getItem("user"));
-    if (
-      !savedUser ||
-      savedUser.username !== form.username ||
-      savedUser.password !== form.password
-    ) {
-      toast.error(t("login.invalid_credentials"));
-      return;
-    }
-
     const result = await login({
-      username: form.username,
+      email: form.username,
       password: form.password,
-      email: savedUser.email,
     });
 
     if (result.success) {

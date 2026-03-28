@@ -40,7 +40,7 @@ const Register = () => {
       toast.error(t('register.pass_mismatch'));
       return;
     }
-    if (form.password.length < 4) {
+    if (form.password.length < 6) {
       toast.error(t('register.pass_min'));
       return;
     }
@@ -116,7 +116,7 @@ const Register = () => {
               value={form.password}
               onChange={handleChange}
               required
-              minLength={4}
+              minLength={6}
               className="w-full border border-gray-300 dark:border-gray-800 bg-white dark:bg-[#0d141e] rounded-[4px] p-2 outline-none focus:border-[#01b4e4] rtl:text-right text-black dark:text-white transition-all"
             />
           </div>

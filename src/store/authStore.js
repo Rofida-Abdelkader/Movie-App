@@ -20,17 +20,17 @@ import { persist } from 'zustand/middleware';
  */
 
 const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY || '';
-const TMDB_BASE    = 'https://api.themoviedb.org/3';
+const TMDB_BASE = 'https://api.themoviedb.org/3';
 
 const useAuthStore = create(
   persist(
     (set, get) => ({
       // ── State ──────────────────────────────────────────────
-      user:      null,   // { id, username, email, avatar? }
+      user: null,   // { id, username, email, avatar? }
       sessionId: null,   // TMDB session_id (bonus flow)
       accountId: null,   // TMDB account_id (needed for Favorites API)
-      loading:   false,
-      error:     null,
+      loading: false,
+      error: null,
 
       // ── Helpers ────────────────────────────────────────────
       clearError: () => set({ error: null }),
@@ -44,16 +44,22 @@ const useAuthStore = create(
       register: async ({ username, email, password }) => {
         set({ loading: true, error: null });
         try {
-          // Simulate async call
-          await new Promise((r) => setTimeout(r, 600));
-
           if (!username || !email || !password)
             throw new Error('All fields are required.');
           if (password.length < 4)
             throw new Error('Password must be at least 4 characters.');
 
+          // Firebase creates the account and returns a user credential
+          const { createUserWithEmailAndPassword, updateProfile } = await import('firebase/auth');
+          const { auth } = await import('../firebase/firebase');
+
+          const credential = await createUserWithEmailAndPassword(auth, email, password);
+
+          // Save the username to Firebase profile
+          await updateProfile(credential.user, { displayName: username });
+
           const user = {
-            id: Date.now().toString(),
+            id: credential.user.uid,
             username,
             email,
             avatar: null,
@@ -63,8 +69,13 @@ const useAuthStore = create(
           set({ user, loading: false });
           return { success: true };
         } catch (err) {
-          set({ error: err.message, loading: false });
-          return { success: false, error: err.message };
+          // Firebase error messages are not user friendly so we clean them up
+          let message = err.message;
+          if (err.code === 'auth/email-already-in-use') message = 'Email is already registered.';
+          if (err.code === 'auth/invalid-email') message = 'Invalid email address.';
+          if (err.code === 'auth/weak-password') message = 'Password must be at least 6 characters.';
+          set({ error: message, loading: false });
+          return { success: false, error: message };
         }
       },
 
@@ -72,49 +83,86 @@ const useAuthStore = create(
        * Login with username + password (local mock).
        * Replace the body with a real API call as needed.
        */
-      login: async ({ username, password, email }) => {
+      login: async ({ email, password }) => {
         set({ loading: true, error: null });
         try {
-          await new Promise((r) => setTimeout(r, 600));
+          const { signInWithEmailAndPassword } = await import('firebase/auth');
+          const { auth } = await import('../firebase/firebase');
 
-          if (!username || !password)
-            throw new Error('Username and password are required.');
+          const credential = await signInWithEmailAndPassword(auth, email, password);
 
-          // ── MOCK: accept any non-empty credentials ──────────
-          // Replace with: const res = await fetch('/api/login', {...})
           const user = {
-            id: '1',
-            username,
-            email: email || `${username}@example.com`,
-            avatar: null,
+            id: credential.user.uid,
+            username: credential.user.displayName || credential.user.email,
+            email: credential.user.email,
+            avatar: credential.user.photoURL || null,
           };
 
           set({ user, loading: false });
           return { success: true };
         } catch (err) {
-          set({ error: err.message, loading: false });
-          return { success: false, error: err.message };
+          let message = err.message;
+          if (err.code === 'auth/user-not-found') message = 'No account found with this email.';
+          if (err.code === 'auth/wrong-password') message = 'Incorrect password.';
+          if (err.code === 'auth/invalid-email') message = 'Invalid email address.';
+          if (err.code === 'auth/invalid-credential') message = 'Invalid email or password.';
+          set({ error: message, loading: false });
+          return { success: false, error: message };
         }
       },
-
       /** Update account details (username / email / avatar). */
       updateAccount: async (fields) => {
         set({ loading: true, error: null });
         try {
-          await new Promise((r) => setTimeout(r, 400));
+          const { updateProfile, updateEmail, updatePassword } = await import('firebase/auth');
+          const { auth } = await import('../firebase/firebase');
+
+          const currentUser = auth.currentUser;
+
+          if (!currentUser) throw new Error('No user is logged in.');
+
+          // Update username or avatar
+          if (fields.username || fields.avatar) {
+            await updateProfile(currentUser, {
+              displayName: fields.username || currentUser.displayName,
+              photoURL: fields.avatar || currentUser.photoURL,
+            });
+          }
+
+          // Update email
+          if (fields.email) {
+            await updateEmail(currentUser, fields.email);
+          }
+
+          // Update password
+          if (fields.password) {
+            await updatePassword(currentUser, fields.password);
+          }
+
+          // Update local state to match
           set((state) => ({
             user: { ...state.user, ...fields },
             loading: false,
           }));
+
           return { success: true };
         } catch (err) {
-          set({ error: err.message, loading: false });
-          return { success: false, error: err.message };
+          let message = err.message;
+          if (err.code === 'auth/requires-recent-login')
+            message = 'Please log out and log in again before changing email or password.';
+          if (err.code === 'auth/invalid-email')
+            message = 'Invalid email address.';
+          if (err.code === 'auth/weak-password')
+            message = 'Password must be at least 6 characters.';
+          set({ error: message, loading: false });
+          return { success: false, error: message };
         }
       },
-
       /** Log out — clears everything. */
-      logout: () => {
+      logout: async () => {
+        const { signOut } = await import('firebase/auth');
+        const { auth } = await import('../firebase/firebase');
+        await signOut(auth);
         set({ user: null, sessionId: null, accountId: null, error: null });
       },
 
@@ -226,7 +274,7 @@ const useAuthStore = create(
     {
       name: 'tmdb-auth',          // localStorage key
       partialize: (state) => ({   // only persist these fields
-        user:      state.user,
+        user: state.user,
         sessionId: state.sessionId,
         accountId: state.accountId,
       }),
