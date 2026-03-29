@@ -58,35 +58,35 @@ export default function Home() {
         fetchMovies()
     }, [page, filters, language, t])
 
-    return (
-        <div className="container mx-auto p-6 transition-colors duration-500">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mt-6">
-                <Filters setFilters={setFilters} genres={genres} />
-                <SortSelect setFilters={setFilters} />
-            </div>
+return (
+  <div className="w-full max-w-[1400px] mx-auto px-3 sm:px-4 md:px-6 transition-colors duration-500">
+    
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mt-4 md:mt-6 flex-wrap">
+      <Filters setFilters={setFilters} genres={genres} />
+      <SortSelect setFilters={setFilters} />
+    </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 mt-8">
-                {loading ? (
-                    <SkeletonCards />
-                ) : movies.length > 0 ? (
-                    movies.map(movie => (
-                        <MovieCard
-                            key={movie.id}
-                            movie={movie}
-                        />
-                    ))
-                ) : (<>
-                    <div className="col-span-full py-20 text-center">
-                        <p className="text-xl font-bold text-gray-500">{t('empty_state.no_results_title')}</p>
-                    </div>
-                    <SkeletonCards />
-                    </>
-                )}
-            </div>
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6 mt-6 md:mt-8">
+      {loading ? (
+        <SkeletonCards />
+      ) : movies.length > 0 ? (
+        movies.map(movie => (
+          <MovieCard key={movie.id} movie={movie} />
+        ))
+      ) : (
+        <>
+          <div className="col-span-full py-20 text-center">
+            <p className="text-xl font-bold text-gray-500">{t('empty_state.no_results_title')}</p>
+          </div>
+          <SkeletonCards />
+        </>
+      )}
+    </div>
 
-            <div className="mt-12 flex justify-center">
-                <Pagination totalPages={totalPages} />
-            </div>
-        </div>
-    )
+    <div className="mt-8 md:mt-12 flex justify-center">
+      <Pagination totalPages={totalPages} />
+    </div>
+
+  </div>
+)
 }

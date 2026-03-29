@@ -35,17 +35,15 @@ const MovieDetails = () => {
   const [activeMediaTab, setActiveMediaTab] = useState('videos');
   const [isFavorite, setIsFavorite] = useState(false);
   const isRTL = i18n.language === 'ar';
-  const API_KEY = "5e2343a149dc636e6c5398bf90b319dd"; // Replace with your actual API key
+  const API_KEY = "5e2343a149dc636e6c5398bf90b319dd";
   const IMAGE_BASE_URL = "https://image.tmdb.org/t/p";
 
   useEffect(() => {
     if (!id || !API_KEY) return;
-
     const fetchData = async () => {
       try {
         setLoading(true);
         window.scrollTo(0, 0);
-
         const [movieRes, castRes, reviewRes, recRes, videoRes, imageRes] = await Promise.all([
           getMovieDetails(id, i18n.language),
           getMovieCredits(id, i18n.language),
@@ -54,28 +52,23 @@ const MovieDetails = () => {
           getMovieVideos(id, i18n.language),
           fetch(`https://api.themoviedb.org/3/movie/${id}/images?api_key=${API_KEY}`)
         ]);
-
         const movieData = movieRes.data;
         const castData = castRes.data;
         const reviewData = reviewRes.data;
         const recData = recRes.data;
         const videoData = videoRes.data;
         const imageData = await imageRes.json();
-
         setMovie(movieData);
         setCast(castData.cast?.slice(0, 10) || []);
         setReviews(reviewData.results?.[0] || null);
         setRecommendations(recData.results?.slice(0, 6) || []);
-
         const trailers = videoData.results?.filter(v => v.type === "Trailer") || [];
         setVideos(trailers);
         setActiveVideo(trailers[0] || null);
-
         setImages({
           backdrops: imageData.backdrops?.slice(0, 10) || [],
           posters: imageData.posters?.slice(0, 10) || []
         });
-
         if (movieData.belongs_to_collection) {
           const colRes = await fetch(
             `https://api.themoviedb.org/3/collection/${movieData.belongs_to_collection.id}?api_key=${API_KEY}`
@@ -83,7 +76,6 @@ const MovieDetails = () => {
           const colData = await colRes.json();
           setCollection(colData);
         }
-
         document.title = `TMDB | ${movieData.title}`;
       } catch (error) {
         console.error("Error fetching movie data:", error);
@@ -91,7 +83,6 @@ const MovieDetails = () => {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [id, API_KEY, i18n.language]);
 
@@ -105,12 +96,12 @@ const MovieDetails = () => {
       className="font-sans bg-white dark:bg-[#0a192f] text-black dark:text-white transition-colors duration-300 relative rtl:text-right"
     >
 
-      {/* Trailer Video Modal */}
+      {/* Trailer Modal */}
       {showTrailer && activeVideo && (
         <div className="fixed inset-0 z-[1000] bg-black/90 flex items-center justify-center p-4">
           <button
             onClick={() => setShowTrailer(false)}
-            className="absolute top-10 right-10 rtl:left-10 rtl:right-auto text-white text-3xl hover:text-[#01b4e4] transition-colors"
+            className="absolute top-4 right-4 md:top-10 md:right-10 rtl:left-4 rtl:right-auto md:rtl:left-10 text-white text-3xl hover:text-[#01b4e4] transition-colors"
           >
             <FaTimes />
           </button>
@@ -131,12 +122,21 @@ const MovieDetails = () => {
         className="relative w-full text-white bg-cover bg-center"
         style={{ backgroundImage: `linear-gradient(to right, rgba(3, 37, 65, 1) 150px, rgba(3, 37, 65, 0.8) 100%), url(${IMAGE_BASE_URL}/original${movie.backdrop_path})` }}
       >
-        <div className="max-w-[1300px] mx-auto px-10 py-10 flex flex-col md:flex-row gap-10">
-          <img src={`${IMAGE_BASE_URL}/w500${movie.poster_path}`} className="w-[300px] rounded-xl shadow-2xl mx-auto md:mx-0" alt={movie.title} />
+        <div className="max-w-[1300px] mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-10 flex flex-col md:flex-row gap-6 md:gap-10">
+          <img
+            src={`${IMAGE_BASE_URL}/w500${movie.poster_path}`}
+            className="w-[180px] sm:w-[220px] md:w-[300px] rounded-xl shadow-2xl mx-auto md:mx-0"
+            alt={movie.title}
+          />
           <div className="flex flex-col justify-center">
-            <h1 className="text-4xl font-bold">{movie.title} <span className="font-normal opacity-70 rtl:hidden dark:text-white">({movie.release_date?.split('-')[0]})</span></h1>
-            <div className="flex items-center gap-3 mt-2 mb-6 text-sm flex-wrap">
-              <span className="border px-1 rounded uppercase font-bold text-[12px]">PG-13</span>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">
+              {movie.title}{' '}
+              <span className="font-normal opacity-70 rtl:hidden dark:text-white">
+                ({movie.release_date?.split('-')[0]})
+              </span>
+            </h1>
+            <div className="flex items-center gap-2 md:gap-3 mt-2 mb-4 md:mb-6 text-xs sm:text-sm flex-wrap">
+              <span className="border px-1 rounded uppercase font-bold text-[11px]">PG-13</span>
               <span>{movie.release_date}</span>
               <span>•</span>
               <span>{movie.genres?.map(g => g.name).join(', ')}</span>
@@ -144,29 +144,28 @@ const MovieDetails = () => {
               <span>{Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m</span>
             </div>
 
-            <div className="flex items-center gap-6 mb-8 flex-wrap">
+            <div className="flex items-center gap-4 md:gap-6 mb-6 md:mb-8 flex-wrap">
               <div className="flex items-center gap-2">
-                <div className="w-14 h-14 rounded-full border-4 border-green-500 flex items-center justify-center bg-[#081c22] font-bold text-lg">
+                <div className="w-12 h-12 md:w-14 md:h-14 rounded-full border-4 border-green-500 flex items-center justify-center bg-[#081c22] font-bold text-base md:text-lg">
                   {Math.round(movie.vote_average * 10)}%
                 </div>
-                <span className="text-sm font-bold w-28 leading-tight">{t('movie_details.user_score')}</span>
+                <span className="text-xs md:text-sm font-bold w-20 md:w-28 leading-tight">{t('movie_details.user_score')}</span>
               </div>
               {user && (
-                <div className="flex gap-3">
+                <div className="flex gap-2 md:gap-3">
                   <button
                     onClick={() => toast.success(t('movie_details.added_list'))}
-                    className="bg-[#032541] p-3 rounded-full hover:scale-110 transition-all">
-                    <FaList size={14} />
+                    className="bg-[#032541] p-2 md:p-3 rounded-full hover:scale-110 transition-all">
+                    <FaList size={12} />
                   </button>
                   <button
                     onClick={() => {
                       setIsFavorite(!isFavorite);
                       toast.success(!isFavorite ? t('movie_details.marked_favorite') : t('movie_details.removed_favorite'));
                     }}
-                    className={`p-3 rounded-full hover:scale-110 transition-all shadow-md ${isFavorite ? 'bg-pink-600 text-white' : 'bg-[#032541] text-pink-400'
-                      }`}
+                    className={`p-2 md:p-3 rounded-full hover:scale-110 transition-all shadow-md ${isFavorite ? 'bg-pink-600 text-white' : 'bg-[#032541] text-pink-400'}`}
                   >
-                    <FaHeart size={14} />
+                    <FaHeart size={12} />
                   </button>
                   <button
                     onClick={() => {
@@ -178,61 +177,61 @@ const MovieDetails = () => {
                           : `${movie.title} ${t('wishlist.removed')}`
                       );
                     }}
-                    className={`p-3 rounded-full hover:scale-110 transition-all shadow-md ${isWishlisted(movie.id) ? 'bg-[#01b4e4] text-white' : 'bg-[#032541] text-white'}`}
+                    className={`p-2 md:p-3 rounded-full hover:scale-110 transition-all shadow-md ${isWishlisted(movie.id) ? 'bg-[#01b4e4] text-white' : 'bg-[#032541] text-white'}`}
                     title={isWishlisted(movie.id) ? t('wishlist.remove') : t('wishlist.add')}
                   >
-                    <FaBookmark size={14} />
+                    <FaBookmark size={12} />
                   </button>
                 </div>
               )}
               <button
                 onClick={() => { setActiveVideo(videos[0]); setShowTrailer(true); }}
-                className="flex items-center gap-2 font-bold hover:text-[#01b4e4] transition-colors"
+                className="flex items-center gap-2 font-bold text-sm md:text-base hover:text-[#01b4e4] transition-colors"
               >
                 <FaPlay className="rtl:rotate-180" /> {t('movie_details.play_trailer')}
               </button>
             </div>
-            <p className="italic opacity-80 text-lg mb-4 text-left rtl:text-right">{t(movie.tagline)}</p>
-            <h3 className="text-xl font-bold mb-2 text-left rtl:text-right dark:text-white">{t('movie_details.overview')}</h3>
-            <p className="leading-relaxed max-w-3xl text-left rtl:text-right">{movie.overview}</p>
+            <p className="italic opacity-80 text-sm md:text-lg mb-3 md:mb-4 text-left rtl:text-right">{t(movie.tagline)}</p>
+            <h3 className="text-lg md:text-xl font-bold mb-2 text-left rtl:text-right dark:text-white">{t('movie_details.overview')}</h3>
+            <p className="leading-relaxed max-w-3xl text-sm md:text-base text-left rtl:text-right">{movie.overview}</p>
           </div>
         </div>
       </div>
 
-      {/* 2. Main Content Grid */}
-      <div className="max-w-[1300px] mx-auto px-10 py-10 flex flex-col lg:flex-row gap-12 text-left rtl:text-right">
+      {/* 2. Main Content */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-10 flex flex-col lg:flex-row gap-8 md:gap-12 text-left rtl:text-right">
 
         {/* Left Column */}
         <div className="lg:w-3/4 overflow-hidden">
 
-          {/* Top Billed Cast */}
-          <section className="mb-10">
-            <h2 className="text-2xl font-bold mb-6 text-black dark:text-white">{t('movie_details.top_cast')}</h2>
-            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+          {/* Cast */}
+          <section className="mb-8 md:mb-10">
+            <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-black dark:text-white">{t('movie_details.top_cast')}</h2>
+            <div className="flex gap-3 md:gap-4 overflow-x-auto pb-4 scrollbar-hide">
               {cast.map(person => (
-                <div key={person.id} className="min-w-[140px] border dark:border-gray-800 rounded-xl shadow-sm bg-white dark:bg-[#0d253f] overflow-hidden hover:shadow-md transition-shadow">
-                  <img src={person.profile_path ? `${IMAGE_BASE_URL}/w185${person.profile_path}` : 'https://via.placeholder.com/185x278'} className="w-full h-[175px] object-cover" alt={person.name} />
-                  <div className="p-3">
-                    <p className="font-bold text-[14px] text-black dark:text-white">{person.name}</p>
-                    <p className="text-gray-500 dark:text-gray-400 text-[12px]">{person.character}</p>
+                <div key={person.id} className="min-w-[120px] md:min-w-[140px] border dark:border-gray-800 rounded-xl shadow-sm bg-white dark:bg-[#0d253f] overflow-hidden hover:shadow-md transition-shadow">
+                  <img src={person.profile_path ? `${IMAGE_BASE_URL}/w185${person.profile_path}` : 'https://via.placeholder.com/185x278'} className="w-full h-[150px] md:h-[175px] object-cover" alt={person.name} />
+                  <div className="p-2 md:p-3">
+                    <p className="font-bold text-[13px] md:text-[14px] text-black dark:text-white">{person.name}</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-[11px] md:text-[12px]">{person.character}</p>
                   </div>
                 </div>
               ))}
             </div>
           </section>
 
-          {/* Social / Review Section */}
-          <section className="mb-10 border-t pt-8 font-sans">
-            <div className="flex items-center gap-8 mb-6">
-              <h2 className="text-2xl font-bold text-black dark:text-white">{t('movie_details.social')}</h2>
+          {/* Social */}
+          <section className="mb-8 md:mb-10 border-t pt-6 md:pt-8 font-sans">
+            <div className="flex items-center gap-4 md:gap-8 mb-4 md:mb-6 flex-wrap">
+              <h2 className="text-xl md:text-2xl font-bold text-black dark:text-white">{t('movie_details.social')}</h2>
               <div
-                className={`flex gap-6 text-[17px] font-semibold cursor-pointer pb-2 transition-all ${activeSocialTab === 'reviews' ? 'border-b-[4px] border-black dark:border-[#01b4e4] text-black dark:text-[#01b4e4]' : 'text-gray-500 dark:text-gray-400'}`}
+                className={`text-[15px] md:text-[17px] font-semibold cursor-pointer pb-2 transition-all ${activeSocialTab === 'reviews' ? 'border-b-[4px] border-black dark:border-[#01b4e4] text-black dark:text-[#01b4e4]' : 'text-gray-500 dark:text-gray-400'}`}
                 onClick={() => setActiveSocialTab('reviews')}
               >
-                <span>{t('movie_details.reviews')} <span className="text-gray-400 font-normal ml-1">{reviews ? '1' : '0'}</span></span>
+                {t('movie_details.reviews')} <span className="text-gray-400 font-normal ml-1">{reviews ? '1' : '0'}</span>
               </div>
               <div
-                className={`text-[17px] font-semibold cursor-pointer pb-2 transition-all hover:text-black dark:hover:text-white ${activeSocialTab === 'discussions' ? 'border-b-[4px] border-black dark:border-[#01b4e4] text-black dark:text-[#01b4e4]' : 'text-gray-500 dark:text-gray-400'}`}
+                className={`text-[15px] md:text-[17px] font-semibold cursor-pointer pb-2 transition-all hover:text-black dark:hover:text-white ${activeSocialTab === 'discussions' ? 'border-b-[4px] border-black dark:border-[#01b4e4] text-black dark:text-[#01b4e4]' : 'text-gray-500 dark:text-gray-400'}`}
                 onClick={() => setActiveSocialTab('discussions')}
               >
                 {t('movie_details.discussions')} <span className="text-gray-400 font-normal ml-1">0</span>
@@ -241,25 +240,25 @@ const MovieDetails = () => {
 
             {activeSocialTab === 'reviews' ? (
               reviews ? (
-                <div className="border border-gray-200 dark:border-gray-800 rounded-xl shadow-md p-6 bg-white dark:bg-[#0d253f]">
-                  <div className="flex items-center gap-4 mb-5">
-                    <div className="w-12 h-12 bg-[#01b4e4] rounded-full flex items-center justify-center text-white font-bold text-xl uppercase shadow-sm overflow-hidden">
+                <div className="border border-gray-200 dark:border-gray-800 rounded-xl shadow-md p-4 md:p-6 bg-white dark:bg-[#0d253f]">
+                  <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-5">
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-[#01b4e4] rounded-full flex items-center justify-center text-white font-bold text-lg uppercase shadow-sm overflow-hidden shrink-0">
                       {reviews.author_details?.avatar_path ? (
                         <img src={`${IMAGE_BASE_URL}/w45${reviews.author_details.avatar_path}`} className="w-full h-full object-cover" alt={reviews.author} />
                       ) : reviews.author[0]}
                     </div>
                     <div className="flex flex-col">
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <h3 className="font-bold text-[1.2rem] text-black dark:text-white hover:text-gray-700 dark:hover:text-[#01b4e4] transition-colors cursor-pointer">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-bold text-[1rem] md:text-[1.2rem] text-black dark:text-white">
                           {t('movie_details.review_by')} {reviews.author}
                         </h3>
                         {reviews.author_details?.rating && (
-                          <div className="bg-[#032541] dark:bg-[#01b4e4] text-white text-[11px] px-2 py-0.5 rounded-[5px] flex items-center gap-1 font-bold rtl:flex-row-reverse">
+                          <div className="bg-[#032541] dark:bg-[#01b4e4] text-white text-[11px] px-2 py-0.5 rounded-[5px] flex items-center gap-1 font-bold">
                             <FaStar size={9} /> {reviews.author_details.rating * 10}%
                           </div>
                         )}
                       </div>
-                      <p className="text-[14px] text-gray-500 dark:text-gray-400 mt-1">
+                      <p className="text-[13px] md:text-[14px] text-gray-500 dark:text-gray-400 mt-1">
                         {t('movie_details.written_by')} <span className="text-black dark:text-white font-semibold">{reviews.author}</span> {t('movie_details.on')} {new Date(reviews.created_at).toLocaleDateString(
                           i18n.language === 'en' ? 'en-US' :
                             i18n.language === 'fr' ? 'fr-FR' :
@@ -271,23 +270,23 @@ const MovieDetails = () => {
                       </p>
                     </div>
                   </div>
-                  <div className="text-[15px] leading-relaxed text-gray-800 dark:text-gray-200 px-1">
+                  <div className="text-[14px] md:text-[15px] leading-relaxed text-gray-800 dark:text-gray-200 px-1">
                     <div className="line-clamp-4 italic">{reviews.content}</div>
                     <button className="text-black dark:text-[#01b4e4] underline font-bold mt-3 hover:text-gray-600 dark:hover:text-white block transition-colors">{t('movie_details.read_rest')}</button>
                   </div>
                 </div>
               ) : (
-                <div className="p-10 bg-gray-50 dark:bg-[#0d141e] rounded-xl text-center text-gray-400 italic border-2 border-dashed border-gray-200 dark:border-gray-800">{t('movie_details.no_reviews')}</div>
+                <div className="p-8 md:p-10 bg-gray-50 dark:bg-[#0d141e] rounded-xl text-center text-gray-400 italic border-2 border-dashed border-gray-200 dark:border-gray-800">{t('movie_details.no_reviews')}</div>
               )
             ) : (
-              <div className="p-10 bg-gray-50 dark:bg-[#0d141e] rounded-xl text-center text-gray-400 italic border-2 border-dashed border-gray-200 dark:border-gray-800">{t('movie_details.no_discussions')}</div>
+              <div className="p-8 md:p-10 bg-gray-50 dark:bg-[#0d141e] rounded-xl text-center text-gray-400 italic border-2 border-dashed border-gray-200 dark:border-gray-800">{t('movie_details.no_discussions')}</div>
             )}
           </section>
 
-          {/* Media Section */}
-          <section className="mb-10 border-t pt-8 font-sans">
-            <div className="flex items-center gap-8 mb-6 overflow-x-auto scrollbar-hide">
-              <h2 className="text-2xl font-bold text-black dark:text-white">{t('movie_details.media')}</h2>
+          {/* Media */}
+          <section className="mb-8 md:mb-10 border-t pt-6 md:pt-8 font-sans">
+            <div className="flex items-center gap-4 md:gap-8 mb-4 md:mb-6 overflow-x-auto scrollbar-hide">
+              <h2 className="text-xl md:text-2xl font-bold text-black dark:text-white shrink-0">{t('movie_details.media')}</h2>
               {[
                 { key: 'videos', label: t('movie_details.videos'), count: videos.length },
                 { key: 'backdrops', label: t('movie_details.backdrops'), count: images.backdrops.length },
@@ -296,7 +295,7 @@ const MovieDetails = () => {
                 <div
                   key={tab.key}
                   onClick={() => setActiveMediaTab(tab.key)}
-                  className={`cursor-pointer pb-2 whitespace-nowrap text-[17px] font-semibold transition-all ${activeMediaTab === tab.key
+                  className={`cursor-pointer pb-2 whitespace-nowrap text-[15px] md:text-[17px] font-semibold transition-all shrink-0 ${activeMediaTab === tab.key
                     ? 'border-b-[4px] border-black dark:border-[#01b4e4] text-black dark:text-[#01b4e4]'
                     : 'text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white'
                     }`}
@@ -312,7 +311,7 @@ const MovieDetails = () => {
                   <div
                     key={video.id}
                     onClick={() => { setActiveVideo(video); setShowTrailer(true); }}
-                    className="relative min-w-[350px] md:min-w-[530px] h-[200px] md:h-[300px] group cursor-pointer overflow-hidden bg-black"
+                    className="relative min-w-[280px] sm:min-w-[350px] md:min-w-[530px] h-[160px] sm:h-[200px] md:h-[300px] group cursor-pointer overflow-hidden bg-black rounded-xl"
                   >
                     <img
                       src={`https://img.youtube.com/vi/${video.key}/maxresdefault.jpg`}
@@ -320,97 +319,83 @@ const MovieDetails = () => {
                       alt={video.name}
                     />
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-16 h-16 bg-black/60 rounded-full flex items-center justify-center group-hover:bg-[#01b4e4] transition-all duration-300">
-                        <FaPlay className="text-white ml-1 rtl:rotate-180" size={25} />
+                      <div className="w-12 h-12 md:w-16 md:h-16 bg-black/60 rounded-full flex items-center justify-center group-hover:bg-[#01b4e4] transition-all duration-300">
+                        <FaPlay className="text-white ml-1 rtl:rotate-180" size={20} />
                       </div>
                     </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                      <p className="text-white font-bold">{video.name}</p>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3 md:p-4">
+                      <p className="text-white text-sm md:text-base font-bold">{video.name}</p>
                     </div>
                   </div>
                 )) : (
-                  <div className="w-full h-[200px] bg-gray-100 dark:bg-[#081c22] rounded-xl flex items-center justify-center text-gray-400 dark:text-gray-500 italic border border-gray-200 dark:border-gray-800">{t('movie_details.no_videos')}</div>
+                  <div className="w-full h-[160px] md:h-[200px] bg-gray-100 dark:bg-[#081c22] rounded-xl flex items-center justify-center text-gray-400 dark:text-gray-500 italic border border-gray-200 dark:border-gray-800">{t('movie_details.no_videos')}</div>
                 )
               )}
 
               {activeMediaTab === 'backdrops' && (
                 images.backdrops.length > 0 ? images.backdrops.map((img, i) => (
-                  <img
-                    key={i}
-                    src={`${IMAGE_BASE_URL}/w500${img.file_path}`}
-                    className="h-[200px] rounded-xl shadow-sm object-cover"
-                    alt="backdrop"
-                  />
+                  <img key={i} src={`${IMAGE_BASE_URL}/w500${img.file_path}`} className="h-[160px] md:h-[200px] rounded-xl shadow-sm object-cover" alt="backdrop" />
                 )) : (
-                  <div className="w-full h-[200px] bg-gray-100 dark:bg-[#081c22] rounded-xl flex items-center justify-center text-gray-400 italic">
-                    No backdrops available
-                  </div>
+                  <div className="w-full h-[160px] md:h-[200px] bg-gray-100 dark:bg-[#081c22] rounded-xl flex items-center justify-center text-gray-400 italic">No backdrops available</div>
                 )
               )}
 
               {activeMediaTab === 'posters' && (
                 images.posters.length > 0 ? images.posters.map((img, i) => (
-                  <img
-                    key={i}
-                    src={`${IMAGE_BASE_URL}/w185${img.file_path}`}
-                    className="h-[250px] rounded-xl shadow-sm object-cover"
-                    alt="poster"
-                  />
+                  <img key={i} src={`${IMAGE_BASE_URL}/w185${img.file_path}`} className="h-[200px] md:h-[250px] rounded-xl shadow-sm object-cover" alt="poster" />
                 )) : (
-                  <div className="w-full h-[200px] bg-gray-100 dark:bg-[#081c22] rounded-xl flex items-center justify-center text-gray-400 italic">
-                    No posters available
-                  </div>
+                  <div className="w-full h-[160px] md:h-[200px] bg-gray-100 dark:bg-[#081c22] rounded-xl flex items-center justify-center text-gray-400 italic">No posters available</div>
                 )
               )}
             </div>
           </section>
 
           {/* Recommendations */}
-          <section className="border-t pt-8 mb-10">
-            <h2 className="text-2xl font-bold mb-6 text-black dark:text-white">{t('movie_details.recommendations')}</h2>
+          <section className="border-t pt-6 md:pt-8 mb-8 md:mb-10">
+            <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-black dark:text-white">{t('movie_details.recommendations')}</h2>
             {recommendations.length > 0 ? (
-              <div className="flex gap-4 overflow-x-auto pb-6 scrollbar-hide">
+              <div className="flex gap-3 md:gap-4 overflow-x-auto pb-4 md:pb-6 scrollbar-hide">
                 {recommendations.map(item => (
                   <div
                     key={item.id}
                     onClick={() => navigate(`/movie/${item.id}`)}
-                    className="min-w-[250px] group cursor-pointer hover:opacity-80 transition-opacity"
+                    className="min-w-[200px] md:min-w-[250px] group cursor-pointer hover:opacity-80 transition-opacity"
                   >
-                    <img src={item.backdrop_path ? `${IMAGE_BASE_URL}/w500${item.backdrop_path}` : 'https://via.placeholder.com/500x281'} className="rounded-xl mb-2 shadow-sm dark:shadow-black w-full h-[140px] object-cover" alt={item.title} />
-                    <div className="flex justify-between text-sm">
-                      <p className="truncate font-medium w-[80%] text-black dark:text-white text-left rtl:text-right">{item.title}</p>
-                      <span className="font-bold text-green-600 rtl:mr-auto rtl:ml-0">{Math.round(item.vote_average * 10)}%</span>
+                    <img src={item.backdrop_path ? `${IMAGE_BASE_URL}/w500${item.backdrop_path}` : 'https://via.placeholder.com/500x281'} className="rounded-xl mb-2 shadow-sm dark:shadow-black w-full h-[110px] md:h-[140px] object-cover" alt={item.title} />
+                    <div className="flex justify-between text-xs md:text-sm">
+                      <p className="truncate font-medium w-[80%] text-black dark:text-white">{item.title}</p>
+                      <span className="font-bold text-green-600">{Math.round(item.vote_average * 10)}%</span>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="p-10 bg-gray-50 dark:bg-[#0d141e] rounded-xl text-center text-gray-400 italic border-2 border-dashed border-gray-200 dark:border-gray-800">
+              <div className="p-8 md:p-10 bg-gray-50 dark:bg-[#0d141e] rounded-xl text-center text-gray-400 italic border-2 border-dashed border-gray-200 dark:border-gray-800">
                 No recommendations available
               </div>
             )}
           </section>
 
-          {/* Collection/Series */}
+          {/* Collection */}
           {collection && (
-            <section className="border-t pt-8">
-              <h2 className="text-2xl font-bold mb-6 text-black dark:text-white">
+            <section className="border-t pt-6 md:pt-8">
+              <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-black dark:text-white">
                 Part of {collection.name}
               </h2>
               <div
-                className="relative rounded-xl overflow-hidden text-white p-8 bg-cover bg-center"
+                className="relative rounded-xl overflow-hidden text-white p-4 md:p-8 bg-cover bg-center"
                 style={{
                   backgroundImage: `linear-gradient(to right, rgba(3,37,65,0.9), rgba(3,37,65,0.6)), url(${IMAGE_BASE_URL}/original${collection.backdrop_path})`
                 }}
               >
-                <h3 className="text-2xl font-bold mb-2">{collection.name}</h3>
-                <p className="text-sm opacity-80 mb-6">Includes {collection.parts?.length} movies</p>
-                <div className="flex gap-4 overflow-x-auto pb-2">
+                <h3 className="text-xl md:text-2xl font-bold mb-2">{collection.name}</h3>
+                <p className="text-xs md:text-sm opacity-80 mb-4 md:mb-6">Includes {collection.parts?.length} movies</p>
+                <div className="flex gap-3 md:gap-4 overflow-x-auto pb-2">
                   {collection.parts?.map(part => (
                     <div
                       key={part.id}
                       onClick={() => navigate(`/movie/${part.id}`)}
-                      className="min-w-[120px] cursor-pointer hover:opacity-80 transition-opacity"
+                      className="min-w-[100px] md:min-w-[120px] cursor-pointer hover:opacity-80 transition-opacity"
                     >
                       <img
                         src={part.poster_path ? `${IMAGE_BASE_URL}/w200${part.poster_path}` : 'https://via.placeholder.com/200x300?text=No+Image'}
@@ -427,28 +412,28 @@ const MovieDetails = () => {
 
         </div>
 
-        {/* Right Column: Sidebar */}
-        <div className="lg:w-1/4 flex flex-col gap-6 text-black dark:text-white text-left rtl:text-right">
-          <div className="flex gap-6 mb-4 text-2xl">
+        {/* Sidebar */}
+        <div className="lg:w-1/4 flex flex-col gap-4 md:gap-6 text-black dark:text-white text-left rtl:text-right border-t lg:border-t-0 pt-6 lg:pt-0">
+          <div className="flex gap-4 md:gap-6 mb-2 md:mb-4 text-xl md:text-2xl">
             <a href={`https://www.imdb.com/title/${movie.imdb_id}`} target="_blank" rel="noreferrer">
               <FaLink className="cursor-pointer hover:text-[#01b4e4] transition-colors" />
             </a>
           </div>
           <div>
-            <p className="font-bold">{t('movie_details.status')}</p>
-            <p className="text-gray-600 dark:text-gray-400">{movie.status}</p>
+            <p className="font-bold text-sm md:text-base">{t('movie_details.status')}</p>
+            <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base">{movie.status}</p>
           </div>
           <div>
-            <p className="font-bold">{t('movie_details.original_language')}</p>
-            <p className="text-gray-600 dark:text-gray-400">{t('movie_details.english')}</p>
+            <p className="font-bold text-sm md:text-base">{t('movie_details.original_language')}</p>
+            <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base">{t('movie_details.english')}</p>
           </div>
           <div>
-            <p className="font-bold">{t('movie_details.budget')}</p>
-            <p className="text-gray-600 dark:text-gray-400">${movie.budget?.toLocaleString() || '-'}</p>
+            <p className="font-bold text-sm md:text-base">{t('movie_details.budget')}</p>
+            <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base">${movie.budget?.toLocaleString() || '-'}</p>
           </div>
           <div>
-            <p className="font-bold">{t('movie_details.revenue')}</p>
-            <p className="text-gray-600 dark:text-gray-400">${movie.revenue?.toLocaleString() || '-'}</p>
+            <p className="font-bold text-sm md:text-base">{t('movie_details.revenue')}</p>
+            <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base">${movie.revenue?.toLocaleString() || '-'}</p>
           </div>
         </div>
 
