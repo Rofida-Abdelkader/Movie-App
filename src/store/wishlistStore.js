@@ -17,7 +17,7 @@ import useAuthStore from './authStore';
  * ──────────────────────────────────────────────────────────────
  */
 
-const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY || '';
+const TMDB_API_KEY = "5e2343a149dc636e6c5398bf90b319dd"; // Replace with your actual API key
 const TMDB_BASE    = 'https://api.themoviedb.org/3';
 
 const useWishlistStore = create(
