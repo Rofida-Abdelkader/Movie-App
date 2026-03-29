@@ -35,7 +35,7 @@ const MovieDetails = () => {
   const [activeMediaTab, setActiveMediaTab] = useState('videos');
   const [isFavorite, setIsFavorite] = useState(false);
   const isRTL = i18n.language === 'ar';
-  const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+  const API_KEY = "5e2343a149dc636e6c5398bf90b319dd"; // Replace with your actual API key
   const IMAGE_BASE_URL = "https://image.tmdb.org/t/p";
 
   useEffect(() => {
