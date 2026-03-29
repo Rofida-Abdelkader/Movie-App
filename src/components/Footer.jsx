@@ -1,8 +1,12 @@
+import useAuthStore from '@/store/authStore';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 const Footer = () => {
   const { t } = useTranslation();
+  const { user, logout } = useAuthStore();
+  const navigate = useNavigate();
 
   return (
     <footer className="bg-[#032541] py-20 mt-auto w-full">
@@ -15,10 +19,15 @@ const Footer = () => {
             <span className="text-[#01b4e4]">{t('footer.movie')}</span>
             <span className="text-[#01b4e4] opacity-80">{t('footer.db')}</span>
           </div>
-
-          <button className="bg-white text-[#01b4e4] font-bold py-3 px-6 rounded-md hover:bg-[#01b4e4] hover:text-white transition-all uppercase tracking-wider text-sm">
-            {t('footer.join_community')}
-          </button>
+          {user ? (
+             <button className="bg-[#01b4e4] text-white font-bold py-3 px-6 rounded-md hover:bg-white hover:text-[#01b4e4] transition-all uppercase tracking-wider text-sm">
+             {  t('home.welcome')+" "+ user.username  }
+            </button>
+          ) : (
+            <button onClick={()=>navigate('/register')} className="bg-[#01b4e4] text-white font-bold py-3 px-6 rounded-md hover:bg-white hover:text-[#01b4e4] transition-all uppercase tracking-wider text-sm">
+              {t('footer.join_community')}
+            </button>
+          )}
         </div>
 
         {/* === Right Side: Links Columns === */}
