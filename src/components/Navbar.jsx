@@ -40,11 +40,11 @@ export default function Navbar() {
             </Link>
             <Link to="/wishlist" className="hover:text-[#01b4e4] transition-colors flex items-center gap-1">
               <span>{t('navbar.wishlist')}</span>
-              {wishlistCount > 0 && (
+              {user ? wishlistCount > 0 && (
                 <span className="bg-[#01b4e4] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center shadow-sm animate-in zoom-in duration-300">
                   {wishlistCount}
                 </span>
-              )}
+              ):null}
             </Link>
           </ul>
         </div>
@@ -115,27 +115,27 @@ export default function Navbar() {
           />
 
           <div className="flex flex-col gap-6 text-xl font-bold">
-            <Link to="/movieslist" onClick={() => setMenuOpen(false)}>{t('navbar.movies')}</Link>
-            <Link to="/wishlist" onClick={() => setMenuOpen(false)} className="flex items-center gap-2">
+            <Link to="/movieslist" className="cursor-pointer" onClick={() => setMenuOpen(false)}>{t('navbar.movies')}</Link>
+            <Link to="/wishlist" onClick={() => setMenuOpen(false)} className="flex items-center cursor-pointer gap-2">
               <span>{t('navbar.wishlist')}</span>
-              {wishlistCount > 0 && (
+              {user ? wishlistCount > 0 && (
                 <span className="bg-[#01b4e4] text-white text-xs font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
                   {wishlistCount}
                 </span>
-              )}
+              ):null}
             </Link>
 
             <div className="h-px bg-white/10 my-2" />
 
             {!user ? (
               <>
-                <Link to="/login" onClick={() => setMenuOpen(false)}>{t('navbar.login')}</Link>
-                <Link to="/register" onClick={() => setMenuOpen(false)}>{t('navbar.join_tmdb')}</Link>
+                <Link to="/login" onClick={() => setMenuOpen(false)} className="cursor-pointer">{t('navbar.login')} </Link>
+                <Link to="/register" onClick={() => setMenuOpen(false)} className="cursor-pointer">{t('navbar.join_tmdb')}</Link>
               </>
             ) : (
               <>
-                <Link to="/account" onClick={() => setMenuOpen(false)}>{t('navbar.account')}</Link>
-                <button onClick={() => { logout(); setMenuOpen(false); }} className="text-left">{t('navbar.logout')}</button>
+                <Link to="/account" onClick={() => setMenuOpen(false)} className="cursor-pointer">{t('navbar.account')}</Link>
+                <button onClick={() => { logout(); setMenuOpen(false); }} className="text-left cursor-pointer">{t('navbar.logout')}</button>
               </>
             )}
           </div>

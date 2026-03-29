@@ -23,7 +23,7 @@ export default function SearchBar(){
     onChange={(e)=>setQuery(e.target.value)}
    />
 
-   <Button onClick={handleSearch} className="bg-gradient-to-r from-[#1ed5a9] to-[#01b4e4] text-white font-bold hover:text-[#032541] transition-all">
+   <Button onClick={handleSearch} className="bg-gradient-to-r cursor-pointer from-[#1ed5a9] to-[#01b4e4] text-white font-bold hover:text-[#032541] transition-all">
     Search
    </Button>
 

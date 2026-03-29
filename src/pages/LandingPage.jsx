@@ -184,7 +184,7 @@ const LandingPage = () => {
                             placeholder={t('landing_page.search_placeholder')} 
                             className="flex-1 px-6 text-gray-800 outline-none h-full text-lg" 
                         />
-                        <Button onClick={handleSearch} className="h-full px-8 bg-gradient-to-r from-[#1ed5a9] to-[#01b4e4] rounded-s-0 rounded-e-full text-white font-bold hover:text-[#032541] transition-all">{t('landing_page.search')}</Button>
+                        <Button onClick={handleSearch} className="h-full px-8 cursor-pointer bg-gradient-to-r from-[#1ed5a9] to-[#01b4e4] rounded-s-0 rounded-e-full text-white font-bold hover:text-[#032541] transition-all">{t('landing_page.search')}</Button>
                     </div>
                 </div>
             </div>
