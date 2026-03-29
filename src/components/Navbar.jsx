@@ -86,8 +86,8 @@ export default function Navbar() {
           <div className="flex items-center gap-4 border-l dark:border-gray-700 pl-6">
             <DarkModeToggle />
             <div className="relative group cursor-pointer">
-              <FaBell className="hover:text-[#01b4e4] transition-colors" />
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#d40242] rounded-full"></span>
+              
+              
             </div>
             {user && (
               <div className="w-8 h-8 rounded-full bg-[#c0392b] flex items-center justify-center text-white text-sm font-bold shadow-md cursor-pointer hover:ring-2 hover:ring-[#01b4e4] transition-all">
