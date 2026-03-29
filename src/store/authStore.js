@@ -164,6 +164,10 @@ const useAuthStore = create(
         const { auth } = await import('../firebase/firebase');
         await signOut(auth);
         set({ user: null, sessionId: null, accountId: null, error: null });
+
+        // Clear wishlist on logout
+        const useWishlistStore = await import('./wishlistStore');
+        useWishlistStore.default.getState().clearWishlist();
       },
 
       // ── TMDB AUTH (BONUS) ───────────────────────────────────
